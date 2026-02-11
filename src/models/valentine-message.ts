@@ -20,6 +20,42 @@ const ValentineMessageTextAndImageSegment = v.object({
 	text: NonEmptyTextSchema,
 });
 
+function getValentineMessageSchemaFromCompressedBase64<
+	TSchema extends v.GenericSchema,
+>(
+	schemaToMatch: TSchema,
+): v.ObjectSchemaAsync<
+	{
+		readonly data: v.SchemaWithPipeAsync<
+			readonly [
+				v.StringSchema<"Expected a compressed string">,
+				v.TransformActionAsync<string, v.InferOutput<TSchema>>,
+			]
+		>;
+	},
+	undefined
+> {
+	//@ts-expect-error Funny type issue
+	return v.objectAsync(
+		{
+			data: v.pipeAsync(
+				v.string("Expected a compressed string"),
+				v.transformAsync(
+					async (compressed): Promise<v.InferOutput<TSchema>> => {
+						const decompressed = await decompressBase64ToString(compressed);
+
+						return v.parse(
+							v.pipe(v.string(), v.transform(JSON.parse), schemaToMatch),
+							decompressed,
+						);
+					},
+				),
+			),
+		},
+		"Object must have a `data` property with the compressed data.",
+	);
+}
+
 const SharedIntroAndOutroSchema = v.object({
 	/** Optional audio to play while the collection plays */
 	audio: v.optional(UrlStringSchema),
@@ -63,6 +99,15 @@ export function createDefaultValentineMessageIntro(): ValentineMessageIntroOutpu
 
 	return v.parse(ValentineMessageIntroSchema, input);
 }
+
+export const ValentineMessageIntroFromCompressedBase64Schema =
+	getValentineMessageSchemaFromCompressedBase64(ValentineMessageIntroSchema);
+export type ValentineMessageIntroFromCompressedBase64Input = v.InferInput<
+	typeof ValentineMessageIntroFromCompressedBase64Schema
+>;
+export type ValentineMessageIntroFromCompressedBase64Output = v.InferOutput<
+	typeof ValentineMessageIntroFromCompressedBase64Schema
+>;
 
 export const ValentineMessageOutroSchema = v.object({
 	...SharedIntroAndOutroSchema.entries,
@@ -152,6 +197,15 @@ export function createDefaultValentineMessageOutro(): ValentineMessageOutroOutpu
 	return v.parse(ValentineMessageOutroSchema, input);
 }
 
+export const ValentineMessageOutroFromCompressedBase64Schema =
+	getValentineMessageSchemaFromCompressedBase64(ValentineMessageOutroSchema);
+export type ValentineMessageOutroFromCompressedBase64Input = v.InferInput<
+	typeof ValentineMessageOutroFromCompressedBase64Schema
+>;
+export type ValentineMessageOutroFromCompressedBase64Output = v.InferOutput<
+	typeof ValentineMessageOutroFromCompressedBase64Schema
+>;
+
 export const ValentineCombinedMessageSchema = v.object({
 	/** Introductory passages of text that will be played after each other, till the user has seen every one. */
 	intro: ValentineMessageIntroSchema,
@@ -165,25 +219,8 @@ export type ValentineCombinedMessageOutput = v.InferOutput<
 	typeof ValentineCombinedMessageSchema
 >;
 
-export const ValentineCombinedMessageFromCompressedBase64Schema = v.objectAsync(
-	{
-		data: v.pipeAsync(
-			v.string(),
-			v.transformAsync(async (compressed) => {
-				const decompressed = await decompressBase64ToString(compressed);
-
-				return v.parse(
-					v.pipe(
-						v.string(),
-						v.transform(JSON.parse),
-						ValentineCombinedMessageSchema,
-					),
-					decompressed,
-				);
-			}),
-		),
-	},
-);
+export const ValentineCombinedMessageFromCompressedBase64Schema =
+	getValentineMessageSchemaFromCompressedBase64(ValentineCombinedMessageSchema);
 export type ValentineCombinedMessageFromCompressedBase64Input = v.InferInput<
 	typeof ValentineCombinedMessageFromCompressedBase64Schema
 >;
