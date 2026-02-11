@@ -128,7 +128,11 @@ export const ValentineMessageOutroSchema = v.object({
 				[],
 			);
 		})(),
+
+		img: v.optional(UrlStringSchema),
 		text: NonEmptyTextSchema,
+
+		title: v.optional(NonEmptyTextSchema, "Will you be my valentine? :3"),
 	}),
 
 	/** What the "no button" should do when clicked */
