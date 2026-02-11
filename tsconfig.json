@@ -23,7 +23,7 @@
 		},
 		"strict": true,
 		"target": "ESNext",
-		"types": ["vinxi/types/client"],
+		"types": ["vinxi/types/client", "@testing-library/jest-dom"],
 		"useUnknownInCatchVariables": true
 	}
 }
