@@ -40,6 +40,7 @@ function getValentineMessageSchemaFromCompressedBase64<
 		{
 			data: v.pipeAsync(
 				v.string("Expected a compressed string"),
+				v.base64(),
 				v.transformAsync(
 					async (compressed): Promise<v.InferOutput<TSchema>> => {
 						const decompressed = await decompressBase64ToString(compressed);
