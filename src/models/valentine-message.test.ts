@@ -11,7 +11,7 @@ import {
 	ValentineMessageOutroSchema,
 } from "./valentine-message";
 
-describe(ValentineMessageIntroSchema.reference.name, () => {
+describe("ValentineMessageIntroSchema", () => {
 	it("should parse a minimal valid intro and apply defaults", () => {
 		const parsed = v.parse(ValentineMessageIntroSchema, {
 			collection: [{ text: "I love you" }],
@@ -111,7 +111,7 @@ describe(ValentineMessageIntroSchema.reference.name, () => {
 	});
 });
 
-describe(ValentineMessageOutroSchema.reference.name, () => {
+describe("ValentineMessageOutroSchema", () => {
 	it("should parse a minimal valid outro and apply defaults", () => {
 		const parsed = v.parse(ValentineMessageOutroSchema, {
 			dialog: {
@@ -196,7 +196,7 @@ describe(ValentineMessageOutroSchema.reference.name, () => {
 	});
 });
 
-describe(ValentineCombinedMessageSchema.reference.name, () => {
+describe("ValentineCombinedMessageSchema", () => {
 	it("should parse a valid combined message using defaults from nested schemas", () => {
 		const parsed = v.parse(ValentineCombinedMessageSchema, {
 			intro: {
@@ -218,76 +218,73 @@ describe(ValentineCombinedMessageSchema.reference.name, () => {
 	});
 });
 
-describe(
-	ValentineCombinedMessageFromCompressedBase64Schema.reference.name,
-	() => {
-		it("should decode, JSON-parse, and validate a compressed payload", async () => {
-			const payload: ValentineCombinedMessageInput = {
-				intro: { collection: [{ text: "Hey you" }] },
-				outro: {
-					dialog: { text: "Till the ends of the earth." },
-					noBtnAction: {
-						click: ["growYesBtn", "growYesBtn"],
-						text: "scrollThenRandom",
-					},
-					noBtnText: [{ text: "No" }],
+describe("ValentineCombinedMessageFromCompressedBase64Schema", () => {
+	it("should decode, JSON-parse, and validate a compressed payload", async () => {
+		const payload: ValentineCombinedMessageInput = {
+			intro: { collection: [{ text: "Hey you" }] },
+			outro: {
+				dialog: { text: "Till the ends of the earth." },
+				noBtnAction: {
+					click: ["growYesBtn", "growYesBtn"],
+					text: "scrollThenRandom",
 				},
-			};
+				noBtnText: [{ text: "No" }],
+			},
+		};
 
-			// Compress as JSON string
-			const compressed = await compressStringToBase64(JSON.stringify(payload));
+		// Compress as JSON string
+		const compressed = await compressStringToBase64(JSON.stringify(payload));
 
-			const parsed = await v.parseAsync(
-				ValentineCombinedMessageFromCompressedBase64Schema,
-				{
+		const parsed = await v.parseAsync(
+			ValentineCombinedMessageFromCompressedBase64Schema,
+			{
+				data: compressed,
+			},
+		);
+
+		// Returned shape: { data: ValentineCombinedMessageOutput }
+		expect(parsed.data.intro.collection[0]?.text).toBe("Hey you");
+		expect(parsed.data.intro.collection[0]?.imgs).toEqual([]);
+		expect(parsed.data.intro.delayMs).toBe(0);
+
+		// Ensure defaults + transforms are applied even through the compressed pipeline
+		expect(parsed.data.outro.dialog.fanfare).toEqual([]);
+		expect(parsed.data.outro.noBtnAction.click).toEqual(["growYesBtn"]);
+	});
+
+	it("should reject invalid base64", async () => {
+		expect(
+			await v
+				.parseAsync(ValentineCombinedMessageFromCompressedBase64Schema, {
+					data: "not base64",
+				})
+				.catch(() => null),
+		).toBeNull();
+	});
+
+	it("should reject invalid JSON in decompressed payload", async () => {
+		const compressed = await compressStringToBase64("this is not json");
+
+		expect(
+			await v
+				.parseAsync(ValentineCombinedMessageFromCompressedBase64Schema, {
 					data: compressed,
-				},
-			);
+				})
+				.catch(() => null),
+		).toBeNull();
+	});
 
-			// Returned shape: { data: ValentineCombinedMessageOutput }
-			expect(parsed.data.intro.collection[0]?.text).toBe("Hey you");
-			expect(parsed.data.intro.collection[0]?.imgs).toEqual([]);
-			expect(parsed.data.intro.delayMs).toBe(0);
+	it("should reject JSON that does not match the schema", async () => {
+		const compressed = await compressStringToBase64(
+			JSON.stringify({ nope: true }),
+		);
 
-			// Ensure defaults + transforms are applied even through the compressed pipeline
-			expect(parsed.data.outro.dialog.fanfare).toEqual([]);
-			expect(parsed.data.outro.noBtnAction.click).toEqual(["growYesBtn"]);
-		});
-
-		it("should reject invalid base64", async () => {
-			expect(
-				await v
-					.parseAsync(ValentineCombinedMessageFromCompressedBase64Schema, {
-						data: "not base64",
-					})
-					.catch(() => null),
-			).toBeNull();
-		});
-
-		it("should reject invalid JSON in decompressed payload", async () => {
-			const compressed = await compressStringToBase64("this is not json");
-
-			expect(
-				await v
-					.parseAsync(ValentineCombinedMessageFromCompressedBase64Schema, {
-						data: compressed,
-					})
-					.catch(() => null),
-			).toBeNull();
-		});
-
-		it("should reject JSON that does not match the schema", async () => {
-			const compressed = await compressStringToBase64(
-				JSON.stringify({ nope: true }),
-			);
-
-			expect(
-				await v
-					.parseAsync(ValentineCombinedMessageFromCompressedBase64Schema, {
-						data: compressed,
-					})
-					.catch(() => null),
-			).toBeNull();
-		});
-	},
-);
+		expect(
+			await v
+				.parseAsync(ValentineCombinedMessageFromCompressedBase64Schema, {
+					data: compressed,
+				})
+				.catch(() => null),
+		).toBeNull();
+	});
+});
