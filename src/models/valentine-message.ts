@@ -3,6 +3,16 @@ import { dedupeArray } from "~/utils/array";
 import { decompressBase64ToString } from "~/utils/string-compression";
 import { NonEmptyTextSchema, UrlStringSchema } from "./shared";
 
+const OptionalUrlStringSchema = v.optional(
+	v.union([
+		UrlStringSchema,
+		v.pipe(
+			v.literal(""),
+			v.transform(() => undefined),
+		),
+	]),
+);
+
 const VALENTINE_MESSAGE_INTRO_SEGMENT_MAX_IMAGES = 3;
 
 const ValentineMessageTextAndImageSegment = v.object({
@@ -59,10 +69,10 @@ function getValentineMessageSchemaFromCompressedBase64<
 
 const SharedIntroAndOutroSchema = v.object({
 	/** Optional audio to play while the collection plays */
-	audio: v.optional(UrlStringSchema),
+	audio: OptionalUrlStringSchema,
 
 	/** Link to the background image */
-	bgImage: v.optional(UrlStringSchema),
+	bgImage: OptionalUrlStringSchema,
 
 	/** Display a heart / bubbly animation wherever the user click on screen */
 	showClickHearts: v.optional(v.boolean(), true),
@@ -135,7 +145,7 @@ export const ValentineMessageOutroSchema = v.object({
 			);
 		})(),
 
-		img: v.optional(UrlStringSchema),
+		img: OptionalUrlStringSchema,
 		text: NonEmptyTextSchema,
 
 		title: v.optional(NonEmptyTextSchema, "Will you be my valentine? :3"),
