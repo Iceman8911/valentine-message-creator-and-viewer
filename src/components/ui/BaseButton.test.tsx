@@ -1,6 +1,6 @@
 import { render } from "@solidjs/testing-library";
 import { describe, expect, it, vi } from "vitest";
-import { BaseButton } from "./button";
+import BaseButton from "./BaseButton";
 
 describe("BaseButton", () => {
 	it("renders a button with type='button' by default", () => {

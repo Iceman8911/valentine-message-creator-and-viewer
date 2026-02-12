@@ -1,6 +1,6 @@
 import type { ComponentProps } from "solid-js";
 
-export function BaseButton(props: ComponentProps<"button">) {
+export default function BaseButton(props: ComponentProps<"button">) {
 	return (
 		<button
 			{...props}
