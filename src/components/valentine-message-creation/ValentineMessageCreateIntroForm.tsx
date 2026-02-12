@@ -198,7 +198,6 @@ function PassageCollectionFieldImgs(props: PassageCollectionFieldProps) {
 							class="input validator"
 							id={field.props.name}
 							placeholder="https://www.example.com/1.png"
-							required
 							type="text"
 							value={field.input ?? ""}
 						></input>
