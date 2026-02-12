@@ -58,3 +58,4 @@
 	--noise: 0.02;
 }
 @plugin "@kobalte/tailwindcss";
+@plugin "tailwind-scrollbar";
