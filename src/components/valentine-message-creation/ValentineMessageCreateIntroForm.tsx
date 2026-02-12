@@ -1,6 +1,6 @@
 import * as formisch from "@formisch/solid";
 import { createAsync } from "@solidjs/router";
-import { PlusIcon } from "lucide-solid";
+import { PlusIcon, Trash2Icon } from "lucide-solid";
 import { For } from "solid-js";
 import * as v from "valibot";
 import {
@@ -13,11 +13,12 @@ import {
 } from "~/models/valentine-message";
 import { compressStringToBase64 } from "~/utils/string-compression";
 import BaseButton from "../ui/BaseButton";
+import RequiredAsterisk from "../ui/RequiredAsterisk";
 import type { _ValentineMessageCreationFormSharedProps } from "./shared";
 
 function ValentineMessageIntroHeader() {
 	return (
-		<div class="col-span-2 mb-4 space-y-2">
+		<div class="mb-4 space-y-2 md:col-span-2">
 			<h2 class="font-semibold">Valentine Message Intro</h2>
 
 			<p class="text-sm">Type out what you wanna say to your bae / boo :3</p>
@@ -26,12 +27,12 @@ function ValentineMessageIntroHeader() {
 }
 
 interface FieldProps {
-	of: formisch.FormStore<typeof ValentineMessageIntroSchema>;
+	form: formisch.FormStore<typeof ValentineMessageIntroSchema>;
 }
 
 function AudioField(props: FieldProps) {
 	return (
-		<formisch.Field of={props.of} path={["audio"]}>
+		<formisch.Field of={props.form} path={["audio"]}>
 			{(field) => (
 				<fieldset class="fieldset">
 					<legend class="fieldset-legend">Audio Link</legend>
@@ -55,7 +56,7 @@ function AudioField(props: FieldProps) {
 
 function BgImageField(props: FieldProps) {
 	return (
-		<formisch.Field of={props.of} path={["bgImage"]}>
+		<formisch.Field of={props.form} path={["bgImage"]}>
 			{(field) => (
 				<fieldset class="fieldset">
 					<legend class="fieldset-legend">Background Image Link</legend>
@@ -77,6 +78,29 @@ function BgImageField(props: FieldProps) {
 	);
 }
 
+function ShowClickHeartsField(props: FieldProps) {
+	return (
+		<formisch.Field of={props.form} path={["showClickHearts"]}>
+			{(field) => (
+				<fieldset class="fieldset">
+					<legend class="fieldset-legend">Show Heart Animation on Click</legend>
+					<input
+						{...field.props}
+						aria-invalid={!!field.errors}
+						checked={field.input}
+						class="toggle"
+						id={field.props.name}
+						type="checkbox"
+					/>
+					<div class="validator-hint hidden">
+						{field.errors && <div>{field.errors[0]}</div>}
+					</div>
+				</fieldset>
+			)}
+		</formisch.Field>
+	);
+}
+
 function DelayDurationField(props: FieldProps) {
 	const [min, max] = (() => {
 		const [, , , toMinValSchema, toMaxValSchema] =
@@ -86,7 +110,7 @@ function DelayDurationField(props: FieldProps) {
 	})();
 
 	return (
-		<formisch.Field of={props.of} path={["delayMs"]}>
+		<formisch.Field of={props.form} path={["delayMs"]}>
 			{(field) => (
 				<fieldset class="fieldset">
 					<legend class="fieldset-legend">Delay (in milliseconds)</legend>
@@ -109,50 +133,125 @@ function DelayDurationField(props: FieldProps) {
 	);
 }
 
-function CollectionFields(props: FieldProps) {
+interface PassageCollectionFieldProps extends FieldProps {
+	idx: number;
+}
+
+function PassageCollectionFieldText(props: PassageCollectionFieldProps) {
 	return (
-		<formisch.FieldArray of={props.of} path={["collection"]}>
+		<formisch.Field of={props.form} path={["collection", props.idx, "text"]}>
+			{(field) => (
+				<div>
+					<label class="floating-label" for={field.props.name}>
+						<span>
+							{" "}
+							Passage <RequiredAsterisk />
+						</span>
+
+						<input
+							{...field.props}
+							aria-invalid={!!field.errors}
+							class="input validator"
+							id={field.props.name}
+							placeholder="I love you :3"
+							required
+							type="text"
+							value={field.input ?? ""}
+						></input>
+					</label>
+					<div class="validator-hint hidden">{field.errors?.[0]}</div>
+				</div>
+			)}
+		</formisch.Field>
+	);
+}
+
+function PassageCollectionFieldImgs(props: PassageCollectionFieldProps) {
+	return (
+		<formisch.FieldArray
+			of={props.form}
+			path={["collection", props.idx, "imgs"]}
+		>
 			{(fieldArray) => (
-				<fieldset class="fieldset relative w-xs rounded-box border border-base-300 p-4">
+				<div>
+					<div class="flex flex-wrap gap-2">
+						<For each={fieldArray.items}>
+							{(_, idx) => (
+								<formisch.Field
+									of={props.form}
+									path={["collection", props.idx, "imgs", idx()]}
+								>
+									{(field) => (
+										<label class="floating-label" for={field.props.name}>
+											<span> Image Url</span>
+
+											<input
+												{...field.props}
+												aria-invalid={!!field.errors}
+												class="input validator"
+												id={field.props.name}
+												placeholder="https://www.example.com/1.png"
+												type="text"
+												value={field.input}
+											></input>
+										</label>
+									)}
+								</formisch.Field>
+							)}
+						</For>
+					</div>
+
+					<div class="validator-hint hidden">{fieldArray.errors?.[0]}</div>
+				</div>
+			)}
+		</formisch.FieldArray>
+	);
+}
+
+function PassageCollectionFields(props: FieldProps) {
+	return (
+		<formisch.FieldArray of={props.form} path={["collection"]}>
+			{(fieldArray) => (
+				<fieldset
+					aria-invalid={!!fieldArray.errors}
+					class="fieldset relative rounded-box border border-base-300 p-4 md:col-span-2"
+				>
 					<legend class="fieldset-legend">Passage Collections</legend>
 
 					<BaseButton
 						class="btn-xs absolute right-4"
-						onClick={() => formisch.insert(props.of, { path: ["collection"] })}
+						onClick={() =>
+							formisch.insert(props.form, { path: ["collection"] })
+						}
 					>
-						Add Passage <PlusIcon />
+						Add Collection <PlusIcon />
 					</BaseButton>
 
-					<For each={fieldArray.items}>
-						{(_, idx) => (
-							<formisch.Field
-								of={props.of}
-								path={["collection", idx(), "text"]}
-							>
-								{(field) => (
-									<>
-										<label class="label" for={field.props.name}>
-											Collection {` ${idx() + 1}`}
-										</label>
-										<input
-											{...field.props}
-											class="input validator"
-											id={field.props.name}
-											type="text"
-											value={field.input ?? ""}
-										></input>
-										<div class="validator-hint">
-											{field.errors && <div>{field.errors[0]}</div>}
-										</div>
-									</>
-								)}
-							</formisch.Field>
-						)}
-					</For>
+					<div class="mt-4 grid gap-8 md:grid-cols-2">
+						<For each={fieldArray.items}>
+							{(_, idx) => (
+								<div class="relative space-y-4 pt-10">
+									<BaseButton
+										class="btn-xs absolute top-0 left-0"
+										onClick={() =>
+											formisch.remove(props.form, {
+												at: idx(),
+												path: ["collection"],
+											})
+										}
+									>
+										Delete Collection <Trash2Icon size={16} />
+									</BaseButton>
 
-					<div class="validator-hint">
-						{fieldArray.errors && <div>{fieldArray.errors[0]}</div>}
+									<PassageCollectionFieldText form={props.form} idx={idx()} />
+
+									<PassageCollectionFieldImgs form={props.form} idx={idx()} />
+								</div>
+							)}
+						</For>
 					</div>
+
+					<div class="validator-hint hidden">{fieldArray.errors?.[0]}</div>
 				</fieldset>
 			)}
 		</formisch.FieldArray>
@@ -191,7 +290,9 @@ export default function ValentineMessageCreateIntroForm(
 
 	const introForm = formisch.createForm({
 		initialInput: initialInput(),
+		revalidate: "input",
 		schema: ValentineMessageIntroSchema,
+		validate: "input",
 	});
 
 	const handleSubmitForm: formisch.SubmitHandler<
@@ -210,16 +311,18 @@ export default function ValentineMessageCreateIntroForm(
 			of={introForm}
 			onSubmit={handleSubmitForm}
 		>
-			<div class="grid grow grid-cols-2 gap-4 overflow-auto">
+			<div class="grid grow gap-4 overflow-auto md:grid-cols-2">
 				<ValentineMessageIntroHeader />
 
-				<AudioField of={introForm} />
+				<AudioField form={introForm} />
 
-				<BgImageField of={introForm} />
+				<BgImageField form={introForm} />
 
-				<DelayDurationField of={introForm} />
+				<DelayDurationField form={introForm} />
 
-				{/*<CollectionFields of={introForm} />*/}
+				<ShowClickHeartsField form={introForm} />
+
+				<PassageCollectionFields form={introForm} />
 			</div>
 
 			<div class="mt-4 flex w-full items-center justify-center gap-4">
