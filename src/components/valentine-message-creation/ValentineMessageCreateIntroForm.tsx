@@ -222,7 +222,7 @@ function PassageCollectionFields(props: FieldProps) {
 						Passage Collections{" "}
 						<InfoButtonPopover
 							config={{ root: { placement: "top" } }}
-							description="A passage collection consists of a piece of text alongside an optional image to be displated to the user. This is where you'll write your hearts desire :3."
+							description="A passage collection consists of a piece of text alongside an optional image to be displated to the user. This is where you'll write your heart's desire :3."
 							title="Passage Collections"
 						/>{" "}
 					</legend>
