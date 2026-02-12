@@ -7,7 +7,7 @@ export default function App() {
 	return (
 		<Router
 			root={(props) => (
-				<div class="h-screen w-screen overflow-auto">
+				<div class="**:scrollbar-thin **:scrollbar-thumb-primary **:scrollbar-track-base-100 h-screen w-screen overflow-auto">
 					<Suspense>{props.children}</Suspense>
 				</div>
 			)}
