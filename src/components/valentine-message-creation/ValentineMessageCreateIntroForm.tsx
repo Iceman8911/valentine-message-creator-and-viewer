@@ -18,7 +18,7 @@ import type { _ValentineMessageCreationFormSharedProps } from "./shared";
 
 function ValentineMessageIntroHeader() {
 	return (
-		<div class="mb-4 space-y-2 md:col-span-2">
+		<div class="mb-4 space-y-2 sm:col-span-2">
 			<h2 class="font-semibold">Valentine Message Intro</h2>
 
 			<p class="text-sm">Type out what you wanna say to your bae / boo :3</p>
@@ -69,9 +69,7 @@ function BgImageField(props: FieldProps) {
 						type="text"
 						value={field.input || ""}
 					/>
-					<div class="validator-hint hidden">
-						{field.errors && <div>{field.errors[0]}</div>}
-					</div>
+					<div class="validator-hint hidden">{field.errors?.[0]}</div>
 				</fieldset>
 			)}
 		</formisch.Field>
@@ -92,9 +90,7 @@ function ShowClickHeartsField(props: FieldProps) {
 						id={field.props.name}
 						type="checkbox"
 					/>
-					<div class="validator-hint hidden">
-						{field.errors && <div>{field.errors[0]}</div>}
-					</div>
+					<div class="validator-hint hidden">{field.errors?.[0]}</div>
 				</fieldset>
 			)}
 		</formisch.Field>
@@ -124,9 +120,7 @@ function DelayDurationField(props: FieldProps) {
 						type="number"
 						value={field.input}
 					/>
-					<div class="validator-hint hidden">
-						{field.errors && <div>{field.errors[0]}</div>}
-					</div>
+					<div class="validator-hint hidden">{field.errors?.[0]}</div>
 				</fieldset>
 			)}
 		</formisch.Field>
@@ -144,7 +138,6 @@ function PassageCollectionFieldText(props: PassageCollectionFieldProps) {
 				<div>
 					<label class="floating-label" for={field.props.name}>
 						<span>
-							{" "}
 							Passage <RequiredAsterisk />
 						</span>
 
@@ -168,43 +161,27 @@ function PassageCollectionFieldText(props: PassageCollectionFieldProps) {
 
 function PassageCollectionFieldImgs(props: PassageCollectionFieldProps) {
 	return (
-		<formisch.FieldArray
-			of={props.form}
-			path={["collection", props.idx, "imgs"]}
-		>
-			{(fieldArray) => (
+		<formisch.Field of={props.form} path={["collection", props.idx, "img"]}>
+			{(field) => (
 				<div>
-					<div class="flex flex-wrap gap-2">
-						<For each={fieldArray.items}>
-							{(_, idx) => (
-								<formisch.Field
-									of={props.form}
-									path={["collection", props.idx, "imgs", idx()]}
-								>
-									{(field) => (
-										<label class="floating-label" for={field.props.name}>
-											<span> Image Url</span>
+					<label class="floating-label" for={field.props.name}>
+						<span>Image / Gif Link</span>
 
-											<input
-												{...field.props}
-												aria-invalid={!!field.errors}
-												class="input validator"
-												id={field.props.name}
-												placeholder="https://www.example.com/1.png"
-												type="text"
-												value={field.input}
-											></input>
-										</label>
-									)}
-								</formisch.Field>
-							)}
-						</For>
-					</div>
-
-					<div class="validator-hint hidden">{fieldArray.errors?.[0]}</div>
+						<input
+							{...field.props}
+							aria-invalid={!!field.errors}
+							class="input validator"
+							id={field.props.name}
+							placeholder="https://www.example.com/1.png"
+							required
+							type="text"
+							value={field.input ?? ""}
+						></input>
+					</label>
+					<div class="validator-hint hidden">{field.errors?.[0]}</div>
 				</div>
 			)}
-		</formisch.FieldArray>
+		</formisch.Field>
 	);
 }
 
@@ -214,7 +191,7 @@ function PassageCollectionFields(props: FieldProps) {
 			{(fieldArray) => (
 				<fieldset
 					aria-invalid={!!fieldArray.errors}
-					class="fieldset relative rounded-box border border-base-300 p-4 md:col-span-2"
+					class="fieldset relative rounded-box border border-base-300 bg-base-300 p-4 shadow-md sm:col-span-2"
 				>
 					<legend class="fieldset-legend">Passage Collections</legend>
 
@@ -227,7 +204,7 @@ function PassageCollectionFields(props: FieldProps) {
 						Add Collection <PlusIcon />
 					</BaseButton>
 
-					<div class="mt-4 grid gap-8 md:grid-cols-2">
+					<div class="mt-4 grid gap-8 sm:grid-cols-2">
 						<For each={fieldArray.items}>
 							{(_, idx) => (
 								<div class="relative space-y-4 pt-10">
@@ -307,11 +284,11 @@ export default function ValentineMessageCreateIntroForm(
 
 	return (
 		<formisch.Form
-			class="flex max-h-[85dvh] max-w-[85dvw] flex-col rounded-box border border-base-300 p-4 shadow-sm"
+			class="**:scrollbar-track-base-200 flex max-h-[85dvh] max-w-[85dvw] flex-col rounded-box border border-base-300 bg-base-200 p-4 shadow-sm"
 			of={introForm}
 			onSubmit={handleSubmitForm}
 		>
-			<div class="grid grow gap-4 overflow-auto md:grid-cols-2">
+			<div class="grid grow gap-4 overflow-auto sm:grid-cols-2">
 				<ValentineMessageIntroHeader />
 
 				<AudioField form={introForm} />
