@@ -83,7 +83,13 @@ export const ValentineMessageIntroSchema = v.object({
 	 *  A delay of 0 means that segments will not be auto-played.
 	 */
 	delayMs: v.optional(
-		v.pipe(v.number(), v.integer(), v.toMinValue(0), v.toMaxValue(60_000)),
+		v.pipe(
+			v.union([v.string(), v.number()]),
+			v.toNumber(),
+			v.integer(),
+			v.toMinValue(0),
+			v.toMaxValue(60_000),
+		),
 		0,
 	),
 });
