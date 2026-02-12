@@ -5,8 +5,8 @@ import { For } from "solid-js";
 import * as v from "valibot";
 import {
 	createDefaultValentineMessageIntro,
-	type ValentineMessageIntroFromCompressedBase64Input,
-	ValentineMessageIntroFromCompressedBase64Schema,
+	type ValentineCombinedMessageFromCompressedBase64Input,
+	ValentineCombinedMessageFromCompressedBase64Schema,
 	type ValentineMessageIntroInput,
 	type ValentineMessageIntroOutput,
 	ValentineMessageIntroSchema,
@@ -283,14 +283,13 @@ export default function ValentineMessageCreateIntroForm(
 					props.initialInput ??
 					(
 						await v.parseAsync(
-							ValentineMessageIntroFromCompressedBase64Schema,
+							ValentineCombinedMessageFromCompressedBase64Schema,
 							props.params,
 						)
-					).data;
+					).data.intro;
 
 				return input;
 			} catch {
-				// Fallback to defaults
 				return createDefaultValentineMessageIntro();
 			}
 		},
@@ -306,9 +305,18 @@ export default function ValentineMessageCreateIntroForm(
 
 	const handleSubmitForm: formisch.SubmitHandler<
 		typeof ValentineMessageIntroSchema
-	> = async (formValues) => {
-		const payload: ValentineMessageIntroFromCompressedBase64Input = {
-			data: await compressStringToBase64(JSON.stringify(formValues)),
+	> = async (introFromInputs) => {
+		const combinedOldPayload = (
+			await v.parseAsync(
+				ValentineCombinedMessageFromCompressedBase64Schema,
+				props.params,
+			)
+		).data;
+
+		combinedOldPayload.intro = introFromInputs;
+
+		const payload: ValentineCombinedMessageFromCompressedBase64Input = {
+			data: await compressStringToBase64(JSON.stringify(combinedOldPayload)),
 		};
 
 		props.setParams(payload);

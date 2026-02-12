@@ -1,17 +1,10 @@
 import type { NavigateOptions } from "@solidjs/router";
-import type {
-	ValentineMessageIntroFromCompressedBase64Input,
-	ValentineMessageOutroFromCompressedBase64Input,
-} from "~/models/valentine-message";
-
-type IntroOrOutroCompressedPayload =
-	| ValentineMessageIntroFromCompressedBase64Input
-	| ValentineMessageOutroFromCompressedBase64Input;
+import type { ValentineCombinedMessageFromCompressedBase64Input } from "~/models/valentine-message";
 
 export interface _ValentineMessageCreationFormSharedProps {
-	params: IntroOrOutroCompressedPayload;
+	params: ValentineCombinedMessageFromCompressedBase64Input;
 	setParams: (
-		params: IntroOrOutroCompressedPayload,
+		params: ValentineCombinedMessageFromCompressedBase64Input,
 		options?: Partial<NavigateOptions>,
 	) => void;
 }

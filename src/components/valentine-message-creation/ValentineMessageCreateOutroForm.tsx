@@ -3,8 +3,8 @@ import { createAsync } from "@solidjs/router";
 import * as v from "valibot";
 import {
 	createDefaultValentineMessageOutro,
-	type ValentineMessageOutroFromCompressedBase64Input,
-	ValentineMessageOutroFromCompressedBase64Schema,
+	type ValentineCombinedMessageFromCompressedBase64Input,
+	ValentineCombinedMessageFromCompressedBase64Schema,
 	type ValentineMessageOutroOutput,
 	ValentineMessageOutroSchema,
 } from "~/models/valentine-message";
@@ -27,14 +27,13 @@ export default function ValentineMessageCreateOutroForm(
 					props.initialInput ??
 					(
 						await v.parseAsync(
-							ValentineMessageOutroFromCompressedBase64Schema,
+							ValentineCombinedMessageFromCompressedBase64Schema,
 							props.params,
 						)
-					).data;
+					).data.outro;
 
 				return input;
 			} catch {
-				// use defaults
 				return createDefaultValentineMessageOutro();
 			}
 		},
@@ -48,9 +47,18 @@ export default function ValentineMessageCreateOutroForm(
 
 	const handleSubmitForm: SubmitHandler<
 		typeof ValentineMessageOutroSchema
-	> = async (formValues) => {
-		const payload: ValentineMessageOutroFromCompressedBase64Input = {
-			data: await compressStringToBase64(JSON.stringify(formValues)),
+	> = async (outroFormInputs) => {
+		const combinedOldPayload = (
+			await v.parseAsync(
+				ValentineCombinedMessageFromCompressedBase64Schema,
+				props.params,
+			)
+		).data;
+
+		combinedOldPayload.outro = outroFormInputs;
+
+		const payload: ValentineCombinedMessageFromCompressedBase64Input = {
+			data: await compressStringToBase64(JSON.stringify(combinedOldPayload)),
 		};
 
 		props.setParams(payload);

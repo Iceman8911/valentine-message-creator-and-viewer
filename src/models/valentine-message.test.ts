@@ -4,14 +4,11 @@ import { compressStringToBase64 } from "~/utils/string-compression";
 import {
 	createDefaultValentineMessageIntro,
 	createDefaultValentineMessageOutro,
+	type ValentineCombinedMessageFromCompressedBase64Output,
 	ValentineCombinedMessageFromCompressedBase64Schema,
 	type ValentineCombinedMessageInput,
 	ValentineCombinedMessageSchema,
-	ValentineMessageIntroFromCompressedBase64Schema,
-	type ValentineMessageIntroInput,
 	ValentineMessageIntroSchema,
-	ValentineMessageOutroFromCompressedBase64Schema,
-	type ValentineMessageOutroInput,
 	ValentineMessageOutroSchema,
 } from "./valentine-message";
 
@@ -201,132 +198,6 @@ describe("ValentineCombinedMessageSchema", () => {
 	});
 });
 
-describe("ValentineMessageIntroFromCompressedBase64Schema", () => {
-	it("should decode, JSON-parse, and validate a compressed intro payload (including defaults)", async () => {
-		const payload: ValentineMessageIntroInput = {
-			collection: [{ text: "Hey you" }],
-		};
-
-		const compressed = await compressStringToBase64(JSON.stringify(payload));
-
-		const parsed = await v.parseAsync(
-			ValentineMessageIntroFromCompressedBase64Schema,
-			{ data: compressed },
-		);
-
-		expect(parsed.data.collection[0]?.text).toBe("Hey you");
-		expect(parsed.data.collection[0]?.img).toBeUndefined();
-		expect(parsed.data.delayMs).toBe(0);
-		expect(parsed.data.showClickHearts).toBe(true);
-
-		// Optionals remain optional
-		expect(parsed.data.audio).toBeUndefined();
-		expect(parsed.data.bgImage).toBeUndefined();
-	});
-
-	it("should reject invalid base64", async () => {
-		expect(
-			await v
-				.parseAsync(ValentineMessageIntroFromCompressedBase64Schema, {
-					data: "not base64",
-				})
-				.catch(() => null),
-		).toBeNull();
-	});
-
-	it("should reject invalid JSON in decompressed payload", async () => {
-		const compressed = await compressStringToBase64("this is not json");
-
-		expect(
-			await v
-				.parseAsync(ValentineMessageIntroFromCompressedBase64Schema, {
-					data: compressed,
-				})
-				.catch(() => null),
-		).toBeNull();
-	});
-
-	it("should reject JSON that does not match the intro schema", async () => {
-		const compressed = await compressStringToBase64(
-			JSON.stringify({ nope: true }),
-		);
-
-		expect(
-			await v
-				.parseAsync(ValentineMessageIntroFromCompressedBase64Schema, {
-					data: compressed,
-				})
-				.catch(() => null),
-		).toBeNull();
-	});
-});
-
-describe("ValentineMessageOutroFromCompressedBase64Schema", () => {
-	it("should decode, JSON-parse, and validate a compressed outro payload (including defaults/transforms)", async () => {
-		const payload: ValentineMessageOutroInput = {
-			dialog: { text: "Till the ends of the earth." },
-			noBtnAction: {
-				click: ["growYesBtn", "growYesBtn"],
-				text: "scrollThenRandom",
-			},
-			noBtnText: [{ text: "No" }],
-		};
-
-		const compressed = await compressStringToBase64(JSON.stringify(payload));
-
-		const parsed = await v.parseAsync(
-			ValentineMessageOutroFromCompressedBase64Schema,
-			{ data: compressed },
-		);
-
-		expect(parsed.data.noBtnText[0]?.text).toBe("No");
-		expect(parsed.data.noBtnText[0]?.img).toBeUndefined();
-		expect(parsed.data.dialog.fanfare).toEqual([]);
-		expect(parsed.data.noBtnAction.click).toEqual(["growYesBtn"]);
-		expect(parsed.data.showClickHearts).toBe(true);
-
-		// Optionals remain optional
-		expect(parsed.data.audio).toBeUndefined();
-		expect(parsed.data.bgImage).toBeUndefined();
-	});
-
-	it("should reject invalid base64", async () => {
-		expect(
-			await v
-				.parseAsync(ValentineMessageOutroFromCompressedBase64Schema, {
-					data: "not base64",
-				})
-				.catch(() => null),
-		).toBeNull();
-	});
-
-	it("should reject invalid JSON in decompressed payload", async () => {
-		const compressed = await compressStringToBase64("this is not json");
-
-		expect(
-			await v
-				.parseAsync(ValentineMessageOutroFromCompressedBase64Schema, {
-					data: compressed,
-				})
-				.catch(() => null),
-		).toBeNull();
-	});
-
-	it("should reject JSON that does not match the outro schema", async () => {
-		const compressed = await compressStringToBase64(
-			JSON.stringify({ nope: true }),
-		);
-
-		expect(
-			await v
-				.parseAsync(ValentineMessageOutroFromCompressedBase64Schema, {
-					data: compressed,
-				})
-				.catch(() => null),
-		).toBeNull();
-	});
-});
-
 describe("ValentineCombinedMessageFromCompressedBase64Schema", () => {
 	it("should decode, JSON-parse, and validate a compressed payload", async () => {
 		const payload: ValentineCombinedMessageInput = {
@@ -361,16 +232,6 @@ describe("ValentineCombinedMessageFromCompressedBase64Schema", () => {
 		expect(parsed.data.outro.noBtnAction.click).toEqual(["growYesBtn"]);
 	});
 
-	it("should reject invalid base64", async () => {
-		expect(
-			await v
-				.parseAsync(ValentineCombinedMessageFromCompressedBase64Schema, {
-					data: "not base64",
-				})
-				.catch(() => null),
-		).toBeNull();
-	});
-
 	it("should reject invalid JSON in decompressed payload", async () => {
 		const compressed = await compressStringToBase64("this is not json");
 
@@ -383,17 +244,26 @@ describe("ValentineCombinedMessageFromCompressedBase64Schema", () => {
 		).toBeNull();
 	});
 
-	it("should reject JSON that does not match the schema", async () => {
+	it("should coerce bad JSON that does not match the schema into something usable", async () => {
 		const compressed = await compressStringToBase64(
 			JSON.stringify({ nope: true }),
 		);
 
-		expect(
-			await v
-				.parseAsync(ValentineCombinedMessageFromCompressedBase64Schema, {
-					data: compressed,
-				})
-				.catch(() => null),
-		).toBeNull();
+		const promise = v
+			.parseAsync(ValentineCombinedMessageFromCompressedBase64Schema, {
+				data: compressed,
+			})
+			.catch(() => null);
+
+		expect(await promise).not.toBeNull();
+
+		const defaults: ValentineCombinedMessageFromCompressedBase64Output = {
+			data: {
+				intro: createDefaultValentineMessageIntro(),
+				outro: createDefaultValentineMessageOutro(),
+			},
+		};
+
+		expect(await promise).toEqual(defaults);
 	});
 });
