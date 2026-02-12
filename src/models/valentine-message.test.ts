@@ -24,8 +24,6 @@ describe("ValentineMessageIntroSchema", () => {
 		expect(parsed.collection).toHaveLength(1);
 		expect(parsed.collection[0]?.text).toBe("I love you");
 
-		// Defaults
-		expect(parsed.collection[0]?.imgs).toEqual([]);
 		expect(parsed.delayMs).toBe(0);
 		expect(parsed.showClickHearts).toBe(true);
 
@@ -84,32 +82,13 @@ describe("ValentineMessageIntroSchema", () => {
 		).toThrow();
 	});
 
-	it("should reject too many imgs", () => {
-		expect(() =>
-			v.parse(ValentineMessageIntroSchema, {
-				collection: [
-					{
-						imgs: [
-							"https://example.com/1.gif",
-							"https://example.com/2.gif",
-							"https://example.com/3.gif",
-							"https://example.com/4.gif",
-							"https://example.com/5.gif",
-						],
-						text: "Hi",
-					},
-				],
-			}),
-		).toThrow();
-	});
-
 	it("createDefaultValentineMessageIntro should return a valid intro", () => {
 		expect(() => createDefaultValentineMessageIntro()).not.toThrow();
 
 		const parsed = createDefaultValentineMessageIntro();
 		expect(parsed.collection.length).toBeGreaterThan(0);
 		expect(parsed.collection[0]?.text.length).toBeGreaterThan(0);
-		expect(parsed.collection[0]?.imgs).toEqual([]);
+		expect(parsed.collection[0]?.img).toBeUndefined();
 		expect(parsed.delayMs).toBe(0);
 		expect(parsed.showClickHearts).toBe(true);
 	});
@@ -132,7 +111,7 @@ describe("ValentineMessageOutroSchema", () => {
 		expect(parsed.noBtnText[0]?.text).toBe("No");
 
 		// Defaults
-		expect(parsed.noBtnText[0]?.imgs).toEqual([]);
+		expect(parsed.noBtnText[0]?.img).toBeUndefined();
 		expect(parsed.dialog.fanfare).toEqual([]);
 		expect(parsed.showClickHearts).toBe(true);
 		expect(parsed.audio).toBeUndefined();
@@ -214,8 +193,8 @@ describe("ValentineCombinedMessageSchema", () => {
 		});
 
 		expect(parsed.intro.delayMs).toBe(0);
-		expect(parsed.intro.collection[0]?.imgs).toEqual([]);
-		expect(parsed.outro.noBtnText[0]?.imgs).toEqual([]);
+		expect(parsed.intro.collection[0]?.img).toBeUndefined();
+		expect(parsed.outro.noBtnText[0]?.img).toBeUndefined();
 		expect(parsed.outro.dialog.fanfare).toEqual([]);
 		expect(parsed.intro.showClickHearts).toBe(true);
 		expect(parsed.outro.showClickHearts).toBe(true);
@@ -236,7 +215,7 @@ describe("ValentineMessageIntroFromCompressedBase64Schema", () => {
 		);
 
 		expect(parsed.data.collection[0]?.text).toBe("Hey you");
-		expect(parsed.data.collection[0]?.imgs).toEqual([]);
+		expect(parsed.data.collection[0]?.img).toBeUndefined();
 		expect(parsed.data.delayMs).toBe(0);
 		expect(parsed.data.showClickHearts).toBe(true);
 
@@ -301,7 +280,7 @@ describe("ValentineMessageOutroFromCompressedBase64Schema", () => {
 		);
 
 		expect(parsed.data.noBtnText[0]?.text).toBe("No");
-		expect(parsed.data.noBtnText[0]?.imgs).toEqual([]);
+		expect(parsed.data.noBtnText[0]?.img).toBeUndefined();
 		expect(parsed.data.dialog.fanfare).toEqual([]);
 		expect(parsed.data.noBtnAction.click).toEqual(["growYesBtn"]);
 		expect(parsed.data.showClickHearts).toBe(true);
@@ -374,7 +353,7 @@ describe("ValentineCombinedMessageFromCompressedBase64Schema", () => {
 
 		// Returned shape: { data: ValentineCombinedMessageOutput }
 		expect(parsed.data.intro.collection[0]?.text).toBe("Hey you");
-		expect(parsed.data.intro.collection[0]?.imgs).toEqual([]);
+		expect(parsed.data.intro.collection[0]?.img).toBeUndefined();
 		expect(parsed.data.intro.delayMs).toBe(0);
 
 		// Ensure defaults + transforms are applied even through the compressed pipeline

@@ -13,20 +13,9 @@ const OptionalUrlStringSchema = v.optional(
 	]),
 );
 
-const VALENTINE_MESSAGE_INTRO_SEGMENT_MAX_IMAGES = 3;
-
 const ValentineMessageTextAndImageSegment = v.object({
-	/** Up to 3 images / gifs to show while the text is onscreen */
-	imgs: v.optional(
-		v.pipe(
-			v.array(UrlStringSchema),
-			v.maxLength(
-				VALENTINE_MESSAGE_INTRO_SEGMENT_MAX_IMAGES,
-				`Only a maximum of ${VALENTINE_MESSAGE_INTRO_SEGMENT_MAX_IMAGES} images can be created`,
-			),
-		),
-		[],
-	),
+	/** An image / gif to show while the text is onscreen */
+	img: OptionalUrlStringSchema,
 	text: NonEmptyTextSchema,
 });
 
@@ -205,11 +194,9 @@ export function createDefaultValentineMessageOutro(): ValentineMessageOutroOutpu
 		},
 		noBtnText: [
 			{
-				imgs: [],
 				text: "No",
 			},
 			{
-				imgs: [],
 				text: "No :(",
 			},
 		],
