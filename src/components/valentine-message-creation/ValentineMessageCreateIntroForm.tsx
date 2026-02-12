@@ -13,6 +13,7 @@ import {
 } from "~/models/valentine-message";
 import { compressStringToBase64 } from "~/utils/string-compression";
 import BaseButton from "../ui/BaseButton";
+import InfoButtonPopover from "../ui/InfoButtonPopover";
 import RequiredAsterisk from "../ui/RequiredAsterisk";
 import type { _ValentineMessageCreationFormSharedProps } from "./shared";
 
@@ -35,7 +36,13 @@ function AudioField(props: FieldProps) {
 		<formisch.Field of={props.form} path={["audio"]}>
 			{(field) => (
 				<fieldset class="fieldset">
-					<legend class="fieldset-legend">Audio Link</legend>
+					<legend class="fieldset-legend">
+						Audio Link{" "}
+						<InfoButtonPopover
+							description="A link to an online audio asset that should play in the background while the user views the message."
+							title="Audio Link"
+						/>{" "}
+					</legend>
 					<input
 						{...field.props}
 						aria-invalid={!!field.errors}
@@ -59,7 +66,13 @@ function BgImageField(props: FieldProps) {
 		<formisch.Field of={props.form} path={["bgImage"]}>
 			{(field) => (
 				<fieldset class="fieldset">
-					<legend class="fieldset-legend">Background Image Link</legend>
+					<legend class="fieldset-legend">
+						Background Image Link{" "}
+						<InfoButtonPopover
+							description="A link to an online image asset to replace the default background."
+							title="Background Image Link"
+						/>{" "}
+					</legend>
 					<input
 						{...field.props}
 						aria-invalid={!!field.errors}
@@ -81,7 +94,13 @@ function ShowClickHeartsField(props: FieldProps) {
 		<formisch.Field of={props.form} path={["showClickHearts"]}>
 			{(field) => (
 				<fieldset class="fieldset">
-					<legend class="fieldset-legend">Show Heart Animation on Click</legend>
+					<legend class="fieldset-legend">
+						Show Heart Animation on Click{" "}
+						<InfoButtonPopover
+							description="Play a cute heart animation wherever the screen is clicked."
+							title="Show Heart Animation on Click"
+						/>{" "}
+					</legend>
 					<input
 						{...field.props}
 						aria-invalid={!!field.errors}
@@ -109,7 +128,13 @@ function DelayDurationField(props: FieldProps) {
 		<formisch.Field of={props.form} path={["delayMs"]}>
 			{(field) => (
 				<fieldset class="fieldset">
-					<legend class="fieldset-legend">Delay (in milliseconds)</legend>
+					<legend class="fieldset-legend">
+						Delay (in milliseconds){" "}
+						<InfoButtonPopover
+							description="How long, in milliseconds, a passage is played before automatically advancing to the next. A value of '0' disables this behaviour."
+							title="Delay"
+						/>{" "}
+					</legend>
 					<input
 						{...field.props}
 						aria-invalid={!!field.errors}
@@ -193,7 +218,14 @@ function PassageCollectionFields(props: FieldProps) {
 					aria-invalid={!!fieldArray.errors}
 					class="fieldset relative rounded-box border border-base-300 bg-base-300 p-4 shadow-md sm:col-span-2"
 				>
-					<legend class="fieldset-legend">Passage Collections</legend>
+					<legend class="fieldset-legend">
+						Passage Collections{" "}
+						<InfoButtonPopover
+							config={{ root: { placement: "top" } }}
+							description="A passage collection consists of a piece of text alongside an optional image to be displated to the user. This is where you'll write your hearts desire :3."
+							title="Passage Collections"
+						/>{" "}
+					</legend>
 
 					<BaseButton
 						class="btn-xs absolute right-4"
