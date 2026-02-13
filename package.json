@@ -15,6 +15,7 @@
 		"@tailwindcss/vite": "^4.0.7",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/user-event": "^14.6.1",
+		"@types/node": "^22.0.0",
 		"@vitest/coverage-v8": "4.0.18",
 		"biome": "^0.3.3",
 		"daisyui": "^5.5.18",
@@ -36,8 +37,9 @@
 	},
 	"name": "example-with-tailwindcss",
 	"scripts": {
-		"build": "vinxi build",
-		"dev": "vinxi dev",
+		"build": "bun run generate:public-assets && vinxi build",
+		"dev": "bun run generate:public-assets && vinxi dev",
+		"generate:public-assets": "bun ./scripts/generate-public-assets.ts",
 		"prepare": "husky",
 		"start": "vinxi start",
 		"test": "vitest run --config vitest.node.config.ts & vitest run --config vitest.dom.config.ts"

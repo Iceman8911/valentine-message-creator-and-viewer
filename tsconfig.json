@@ -19,11 +19,12 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"paths": {
+			"/*": ["./*", "./public/*"],
 			"~/*": ["./src/*"]
 		},
 		"strict": true,
 		"target": "ESNext",
-		"types": ["vinxi/types/client", "@testing-library/jest-dom"],
+		"types": ["vinxi/types/client", "@testing-library/jest-dom", "node"],
 		"useUnknownInCatchVariables": true
 	}
 }

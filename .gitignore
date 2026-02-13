@@ -28,3 +28,6 @@ gitignore
 Thumbs.db
 
 coverage
+
+# Generated
+src/generated/public-assets.ts
