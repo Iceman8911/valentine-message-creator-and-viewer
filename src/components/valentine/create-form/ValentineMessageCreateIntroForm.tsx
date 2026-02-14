@@ -18,13 +18,13 @@ import {
 import {
 	MAX_DELAY_MS_VALUE,
 	MIN_DELAY_MS_VALUE,
-} from "../constants/model-limits";
-import BaseButton from "../ui/BaseButton";
-import FieldsetNumberInput from "../ui/form-fields/FieldsetNumberInput";
-import FieldsetTextInput from "../ui/form-fields/FieldsetTextInput";
-import FieldsetToggleInput from "../ui/form-fields/FieldsetToggleInput";
-import FloatingLabelTextInput from "../ui/form-fields/FloatingLabelTextInput";
-import InfoButtonPopover from "../ui/InfoButtonPopover";
+} from "../../constants/model-limits";
+import BaseButton from "../../ui/BaseButton";
+import FieldsetNumberInput from "../../ui/form-fields/FieldsetNumberInput";
+import FieldsetTextInput from "../../ui/form-fields/FieldsetTextInput";
+import FieldsetToggleInput from "../../ui/form-fields/FieldsetToggleInput";
+import FloatingLabelTextInput from "../../ui/form-fields/FloatingLabelTextInput";
+import InfoButtonPopover from "../../ui/InfoButtonPopover";
 import type { _ValentineMessageCreationFormSharedProps } from "./shared";
 
 function ValentineMessageIntroHeader() {

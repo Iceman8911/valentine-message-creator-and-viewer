@@ -2,8 +2,8 @@ import { A, useParams, useSearchParams } from "@solidjs/router";
 import { createMemo, ErrorBoundary, For, Show } from "solid-js";
 import * as v from "valibot";
 import BaseButton from "~/components/ui/BaseButton";
-import ValentineMessageCreateIntroForm from "~/components/valentine-message-creation/ValentineMessageCreateIntroForm";
-import ValentineMessageCreateOutroForm from "~/components/valentine-message-creation/ValentineMessageCreateOutroForm";
+import ValentineMessageCreateIntroForm from "/src/components/valentine/create-form/ValentineMessageCreateIntroForm";
+import ValentineMessageCreateOutroForm from "/src/components/valentine/create-form/ValentineMessageCreateOutroForm";
 import {
 	type ValentineMessageSearchParamsInput,
 	ValentineMessageSearchParamsSchema,

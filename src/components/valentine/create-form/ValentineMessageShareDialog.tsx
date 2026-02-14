@@ -1,8 +1,8 @@
 import type { JSXElement } from "solid-js";
 import type { UrlStringOutput } from "/src/models/shared";
-import BaseButton from "../ui/BaseButton";
-import BaseDialog from "../ui/BaseDialog";
-import ValentineHeartIcon from "./ValentineHeartIcon";
+import BaseButton from "../../ui/BaseButton";
+import BaseDialog from "../../ui/BaseDialog";
+import ValentineHeartIcon from "../ValentineHeartIcon";
 
 function ValentineMessageShareDialogDescription(props: {
 	link: UrlStringOutput;
