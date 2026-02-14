@@ -222,3 +222,19 @@ export type ValentineCombinedMessageToCompressedBase64Input = v.InferInput<
 export type ValentineCombinedMessageToCompressedBase64Output = v.InferOutput<
 	typeof ValentineCombinedMessageToCompressedBase64Schema
 >;
+
+export const ValentineMessageSearchParamsSchema = v.fallback(
+	v.object({
+		/** The stringified representation of the combined valentine schema */
+		data: v.string(),
+	}),
+	{
+		data: "",
+	},
+);
+export type ValentineMessageSearchParamsInput = v.InferInput<
+	typeof ValentineMessageSearchParamsSchema
+>;
+export type ValentineMessageSearchParamsOutput = v.InferOutput<
+	typeof ValentineMessageSearchParamsSchema
+>;

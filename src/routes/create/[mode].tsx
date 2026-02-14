@@ -4,6 +4,7 @@ import * as v from "valibot";
 import BaseButton from "~/components/ui/BaseButton";
 import ValentineMessageCreateIntroForm from "~/components/valentine-message-creation/ValentineMessageCreateIntroForm";
 import ValentineMessageCreateOutroForm from "~/components/valentine-message-creation/ValentineMessageCreateOutroForm";
+import { ValentineMessageSearchParamsSchema } from "/src/models/valentine-message";
 
 const RouteOptionSchema = v.picklist(["intro", "outro"]);
 
@@ -12,20 +13,15 @@ const RouteParamsSchema = v.object({
 });
 type RouteParamsOutput = v.InferOutput<typeof RouteParamsSchema>;
 
-const SearchParamsSchema = v.fallback(v.object({ data: v.string() }), {
-	data: "",
-});
-type SearchParamsInput = v.InferInput<typeof SearchParamsSchema>;
-
 export default function ValentineMessageCreationFormPage() {
 	const routeParams = useParams();
 
 	const [rawSearchParams, _setSearchParams] = useSearchParams();
 	const usefulSearchParams = createMemo(() =>
-		v.parse(SearchParamsSchema, rawSearchParams),
+		v.parse(ValentineMessageSearchParamsSchema, rawSearchParams),
 	);
 	const setSearchParams = (input: string) => {
-		const payload: SearchParamsInput = {
+		const payload: ValentineMessageSearchParamsInput = {
 			data: input,
 		};
 

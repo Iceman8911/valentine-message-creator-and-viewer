@@ -13,6 +13,7 @@ import {
 	type ValentineMessageIntroInput,
 	type ValentineMessageIntroOutput,
 	ValentineMessageIntroSchema,
+	type ValentineMessageSearchParamsInput,
 } from "~/models/valentine-message";
 import {
 	MAX_DELAY_MS_VALUE,
@@ -276,10 +277,14 @@ export default function ValentineMessageCreateIntroForm(
 				combinedOldPayload,
 			);
 
-		props.setParams(payload);
+		const searchParams: ValentineMessageSearchParamsInput = {
+			data: payload,
+		};
 
 		// Load the outro form
-		navigate(`/create/outro?${new URLSearchParams(payload)}`);
+		navigate(
+			`/create/outro?${decodeURIComponent(`${new URLSearchParams(searchParams)}`)}`,
+		);
 	};
 
 	return (
