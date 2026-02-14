@@ -8,9 +8,8 @@ import {
 	onMount,
 	Show,
 } from "solid-js";
-import { PUBLIC_ASSETS } from "/src/generated/public-assets";
 import type { ValentineMessageIntroOutput } from "/src/models/valentine-message";
-import { getRandomArrayElement } from "/src/utils/array";
+import { getRandomPublicAsset } from "/src/utils/public-assets";
 import BaseButton from "../../ui/BaseButton";
 import type { _ValentineMessageViewSharedProps } from "./shared";
 
@@ -64,10 +63,7 @@ export default function ValentineMessageViewIntro(
 						<img
 							alt="Valentine Gif"
 							class="motion-preset-fade col-span-3 col-start-2 row-start-1 max-h-72 w-auto rounded-box"
-							src={
-								passage.img ??
-								getRandomArrayElement(PUBLIC_ASSETS["/gif-happy"])
-							}
+							src={passage.img ?? getRandomPublicAsset("/gif-happy")}
 						/>
 
 						<h2 class="wrap-anywhere motion-preset-fade col-span-5 row-start-2 max-h-30 overflow-auto font-semibold text-2xl">

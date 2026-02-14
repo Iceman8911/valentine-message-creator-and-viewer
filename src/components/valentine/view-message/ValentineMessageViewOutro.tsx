@@ -1,10 +1,10 @@
 import clsx from "clsx/lite";
 import { HeartIcon } from "lucide-solid";
 import { createMemo, createSelector, createSignal, For, Show } from "solid-js";
-import { PUBLIC_ASSETS } from "/src/generated/public-assets";
 import type { ValentineMessageOutroOutput } from "/src/models/valentine-message";
 import { getRandomArrayElement } from "/src/utils/array";
 import { getRandomIntegerInRangeInclusively } from "/src/utils/number";
+import { getRandomPublicAsset } from "/src/utils/public-assets";
 import BaseButton from "../../ui/BaseButton";
 import BaseDialog from "../../ui/BaseDialog";
 import type { _ValentineMessageViewSharedProps } from "./shared";
@@ -119,8 +119,8 @@ export default function ValentineMessageViewOutro(
 								class="motion-preset-fade col-span-3 col-start-2 row-start-1 max-h-72 w-auto rounded-box"
 								src={
 									data.img ??
-									getRandomArrayElement(
-										PUBLIC_ASSETS[useHappyImg() ? "/gif-happy" : "/gif-sad"],
+									getRandomPublicAsset(
+										useHappyImg() ? "/gif-happy" : "/gif-sad",
 									)
 								}
 							/>
@@ -136,7 +136,7 @@ export default function ValentineMessageViewOutro(
 											alt="Valentine Gif"
 											src={
 												outroSettings().dialog.img ??
-												getRandomArrayElement(PUBLIC_ASSETS["/gif-happy"])
+												getRandomPublicAsset("/gif-happy")
 											}
 										/>
 

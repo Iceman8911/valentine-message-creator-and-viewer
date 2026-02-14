@@ -14,7 +14,6 @@ import type { ValentineMessageMode } from "/src/components/types/valentine-messa
 import BaseButton from "/src/components/ui/BaseButton";
 import ValentineMessageViewIntro from "/src/components/valentine/view-message/ValentineMessageViewIntro";
 import ValentineMessageViewOutro from "/src/components/valentine/view-message/ValentineMessageViewOutro";
-import { PUBLIC_ASSETS } from "/src/generated/public-assets";
 import type { UrlStringOutput } from "/src/models/shared";
 import {
 	ValentineCombinedMessageFromCompressedBase64Schema,
@@ -23,6 +22,7 @@ import {
 } from "/src/models/valentine-message";
 import { getRandomArrayElement } from "/src/utils/array";
 import { getRandomIntegerInRangeInclusively } from "/src/utils/number";
+import { getRandomPublicAsset } from "/src/utils/public-assets";
 
 function HiddenAutoplayAudioElement(props: {
 	ref: HTMLAudioElement;
@@ -35,11 +35,10 @@ function HiddenAutoplayAudioElement(props: {
 			inert
 			loop
 			onError={(e) => {
-				e.currentTarget.src =
-					getRandomArrayElement(PUBLIC_ASSETS["/audio"]) ?? "";
+				e.currentTarget.src = getRandomPublicAsset("/audio");
 			}}
 			ref={props.ref}
-			src={props.link ?? getRandomArrayElement(PUBLIC_ASSETS["/audio"])}
+			src={props.link ?? getRandomPublicAsset("/audio")}
 			tabindex={-1}
 		/>
 	);
@@ -89,7 +88,7 @@ function HiddenAutoplayAudioElementToggleBtn(props: {
 
 export default function ValentineMessageViewPage() {
 	const [messageMode, setMessageMode] =
-		createSignal<ValentineMessageMode>("outro");
+		createSignal<ValentineMessageMode>("intro");
 
 	let outermostElement!: HTMLDivElement;
 	let hiddenAutoplay$!: HTMLAudioElement;
@@ -155,7 +154,7 @@ export default function ValentineMessageViewPage() {
 			<div
 				class="absolute inset-0 bg-center bg-cover opacity-50 blur-xs"
 				style={{
-					"background-image": `url("${sharedIntroAndOutroProps()?.bgImage ?? getRandomArrayElement(PUBLIC_ASSETS["/image"])}")`,
+					"background-image": `url("${sharedIntroAndOutroProps()?.bgImage ?? getRandomPublicAsset("/image")}")`,
 				}}
 			/>
 
