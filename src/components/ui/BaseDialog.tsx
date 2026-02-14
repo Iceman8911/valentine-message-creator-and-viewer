@@ -17,7 +17,7 @@ interface BaseDialogProps {
 	title: JSXElement;
 	description: JSXElement;
 	trigger: JSXElement;
-	class?: Partial<Record<"trigger" | "overlay", string>>;
+	class?: Partial<Record<"trigger" | "overlay" | "content", string>>;
 }
 
 export default function BaseDialog(props: BaseDialogProps) {
@@ -42,6 +42,7 @@ export default function BaseDialog(props: BaseDialogProps) {
 					<Dialog.Content
 						class={clsx(
 							"ui-expanded:motion-opacity-in-0 ui-not-expanded:motion-opacity-out-0 max-w-[80vw] origin-(--kb-popover-content-transform-origin) rounded-box border border-base-300 bg-base-200 p-4 shadow sm:max-w-xl",
+							props.class?.content,
 						)}
 						{...props.config?.content}
 					>

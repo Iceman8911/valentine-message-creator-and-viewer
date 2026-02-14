@@ -45,6 +45,7 @@ export default function ValentineMessageShareDialog(
 ) {
 	return (
 		<BaseDialog
+			class={{ content: "motion-preset-confetti" }}
 			description={<ValentineMessageShareDialogDescription link={props.link} />}
 			title={
 				<p class="flex flex-nowrap gap-2">
