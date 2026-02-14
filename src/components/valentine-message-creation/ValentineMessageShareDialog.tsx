@@ -1,4 +1,3 @@
-import { Link } from "@kobalte/core/link";
 import type { JSXElement } from "solid-js";
 import type { UrlStringOutput } from "/src/models/shared";
 import BaseButton from "../ui/BaseButton";
@@ -16,13 +15,13 @@ function ValentineMessageShareDialogDescription(props: {
 			</p>
 
 			<div class="rounded-box bg-base-100 p-4 shadow">
-				<Link
+				<a
 					class="link link-primary inline-block w-full truncate"
 					href={props.link}
 					target="_blank"
 				>
 					{props.link}
-				</Link>
+				</a>
 			</div>
 
 			<BaseButton
