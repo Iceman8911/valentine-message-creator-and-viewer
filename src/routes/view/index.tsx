@@ -69,7 +69,7 @@ function HiddenAutoplayAudioElementToggleBtn(props: {
 
 	return (
 		<BaseButton
-			class="btn-secondary btn-soft absolute top-4 right-4 flex gap-2"
+			class="btn-secondary btn-soft absolute top-4 right-4 flex gap-2 opacity-80"
 			onClick={handleAudioToggle}
 		>
 			<Show
