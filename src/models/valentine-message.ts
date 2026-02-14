@@ -197,18 +197,9 @@ export const ValentineCombinedMessageFromCompressedBase64Schema =
 		v.pipeAsync(
 			v.string("Expected a compressed string"),
 			v.base64(),
-			v.transformAsync(async (compressed) => {
-				const decompressed = await decompressBase64ToString(compressed);
-
-				return v.parse(
-					v.pipe(
-						v.string(),
-						v.transform(JSON.parse),
-						ValentineCombinedMessageSchema,
-					),
-					decompressed,
-				);
-			}),
+			v.transformAsync(decompressBase64ToString),
+			v.parseJson(),
+			ValentineCombinedMessageSchema,
 		),
 		createDefaultCombinedValentineMessage(),
 	);
@@ -222,12 +213,8 @@ export type ValentineCombinedMessageFromCompressedBase64Output = v.InferOutput<
 export const ValentineCombinedMessageToCompressedBase64Schema = v.pipeAsync(
 	ValentineCombinedMessageSchema,
 	v.stringifyJson(),
-	v.transformAsync(async (stringified) => {
-		const compressed = await compressStringToBase64(stringified);
-
-		return compressed;
-	}),
-	v.base64(),
+	v.transformAsync(compressStringToBase64),
+	v.base64("Expected a compressed base64 string"),
 );
 export type ValentineCombinedMessageToCompressedBase64Input = v.InferInput<
 	typeof ValentineCombinedMessageToCompressedBase64Schema
