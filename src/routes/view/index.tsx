@@ -69,7 +69,7 @@ function HiddenAutoplayAudioElementToggleBtn(props: {
 
 	return (
 		<BaseButton
-			class="btn-secondary btn-soft absolute top-4 right-4 flex gap-2 opacity-80"
+			class="btn-secondary btn-soft absolute top-4 right-4 z-10 flex gap-2 opacity-80"
 			onClick={handleAudioToggle}
 		>
 			<Show
@@ -89,7 +89,7 @@ function HiddenAutoplayAudioElementToggleBtn(props: {
 
 export default function ValentineMessageViewPage() {
 	const [messageMode, setMessageMode] =
-		createSignal<ValentineMessageMode>("intro");
+		createSignal<ValentineMessageMode>("outro");
 
 	let outermostElement!: HTMLDivElement;
 	let hiddenAutoplay$!: HTMLAudioElement;
