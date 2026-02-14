@@ -2,6 +2,7 @@ import * as formisch from "@formisch/solid";
 import { createAsync } from "@solidjs/router";
 import { PlusIcon, Trash2Icon } from "lucide-solid";
 import { For } from "solid-js";
+import { isServer } from "solid-js/web";
 import * as v from "valibot";
 import {
 	createDefaultCombinedValentineMessage,
@@ -14,6 +15,8 @@ import {
 	type ValentineMessageOutroOutput,
 	ValentineMessageOutroSchema,
 } from "~/models/valentine-message";
+import { createDefaultUrlString } from "/src/models/shared";
+import { getValentineMessageViewLink } from "/src/utils/valentine-message";
 import BaseButton from "../ui/BaseButton";
 import FieldsetRadioGroupInput from "../ui/form-fields/FieldsetRadioGroupInput";
 import FieldsetTextInput from "../ui/form-fields/FieldsetTextInput";
@@ -21,6 +24,7 @@ import FieldsetToggleInput from "../ui/form-fields/FieldsetToggleInput";
 import FloatingLabelTextInput from "../ui/form-fields/FloatingLabelTextInput";
 import InfoButtonPopover from "../ui/InfoButtonPopover";
 import type { _ValentineMessageCreationFormSharedProps } from "./shared";
+import ValentineMessageShareDialog from "./ValentineMessageShareDialog";
 
 function ValentineMessageOutroHeader() {
 	return (
@@ -32,7 +36,7 @@ function ValentineMessageOutroHeader() {
 				^w^
 			</p>
 			<p class="hidden text-sm sm:block">
-				Everything that leads up to the final choice! Hope it goes well ^w^
+				Everything that leads up to the final choice! Hope it goes well ^w^.
 			</p>
 		</div>
 	);
@@ -452,6 +456,20 @@ interface ValentineMessageCreateOutroFormProps
 export default function ValentineMessageCreateOutroForm(
 	props: ValentineMessageCreateOutroFormProps,
 ) {
+	const getLocation = createAsync(
+		async () =>
+			isServer
+				? createDefaultUrlString()
+				: getValentineMessageViewLink(
+						await v.parseAsync(
+							ValentineCombinedMessageFromCompressedBase64Schema,
+							props.params,
+						),
+						location.origin,
+					),
+		{ initialValue: createDefaultUrlString() },
+	);
+
 	/** Prioritize props, but fall back to searchParams */
 	const initialInput = createAsync<ValentineMessageOutroInput>(
 		async () => {
@@ -559,9 +577,14 @@ export default function ValentineMessageCreateOutroForm(
 				>
 					Reset
 				</BaseButton>
-				<BaseButton class="btn-primary btn-soft grow-2" type="submit">
-					Done!
-				</BaseButton>
+				<ValentineMessageShareDialog
+					link={getLocation()}
+					trigger={
+						<BaseButton class="btn-primary btn-soft grow-2" type="submit">
+							Finalize!
+						</BaseButton>
+					}
+				/>
 			</div>
 		</formisch.Form>
 	);
