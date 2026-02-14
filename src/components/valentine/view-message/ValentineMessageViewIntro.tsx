@@ -1,6 +1,5 @@
 import clsx from "clsx/lite";
 import {
-	createEffect,
 	createMemo,
 	createSelector,
 	createSignal,
@@ -57,8 +56,6 @@ export default function ValentineMessageViewIntro(
 		}
 	});
 
-	createEffect(() => console.log(currIdx(), introSettings().collection));
-
 	return (
 		<div class="grid max-w-[80vw] grid-cols-5 grid-rows-[2fr_1fr_1fr] gap-4 *:place-self-center">
 			<For each={introSettings().collection}>
@@ -74,7 +71,7 @@ export default function ValentineMessageViewIntro(
 						/>
 
 						<h2 class="wrap-anywhere motion-preset-fade col-span-5 row-start-2 max-h-30 overflow-auto font-semibold text-2xl">
-							{passage.text}{" "}
+							{passage.text}
 						</h2>
 					</Show>
 				)}
@@ -88,6 +85,7 @@ export default function ValentineMessageViewIntro(
 			>
 				Prev
 			</BaseButton>
+
 			<BaseButton
 				class={clsx(
 					"btn-lg col-span-2 col-start-4 row-start-3 sm:col-span-1 sm:col-start-4",
