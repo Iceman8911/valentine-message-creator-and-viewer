@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dedupeArray } from "./array";
+import { dedupeArray, getRandomArrayElement } from "./array";
 
 describe(dedupeArray.name, () => {
 	it("should dedupe arrays", () => {
@@ -14,5 +14,19 @@ describe(dedupeArray.name, () => {
 		const deduped = [1, 2, 3, 4, 5];
 
 		expect(dedupeArray(deduped)).toEqual(deduped);
+	});
+});
+
+describe(getRandomArrayElement.name, () => {
+	it("should return a random array element", () => {
+		const arr = [1, 2, 4, 3, 3, 1] as const;
+
+		expect(
+			arr.includes(getRandomArrayElement(arr) as 1 | 2 | 3 | 4),
+		).toBeTruthy();
+	});
+
+	it("should return undefined for empty arrays", () => {
+		expect(getRandomArrayElement([])).toBeUndefined();
 	});
 });
