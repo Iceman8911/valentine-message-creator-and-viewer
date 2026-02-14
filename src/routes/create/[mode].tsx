@@ -10,11 +10,12 @@ const RouteOptionSchema = v.picklist(["intro", "outro"]);
 const RouteParamsSchema = v.object({
 	mode: RouteOptionSchema,
 });
+type RouteParamsOutput = v.InferOutput<typeof RouteParamsSchema>;
 
 const SearchParamsSchema = v.fallback(v.object({ data: v.string() }), {
 	data: "",
 });
-type SearchParamsInput = v.InferOutput<typeof SearchParamsSchema>;
+type SearchParamsInput = v.InferInput<typeof SearchParamsSchema>;
 
 export default function ValentineMessageCreationFormPage() {
 	const routeParams = useParams();
@@ -31,7 +32,9 @@ export default function ValentineMessageCreationFormPage() {
 		_setSearchParams(payload);
 	};
 
-	const parsedResult = v.safeParse(RouteParamsSchema, routeParams);
+	const parsedResult = createMemo(() =>
+		v.safeParse(RouteParamsSchema, routeParams),
+	);
 
 	return (
 		<div class="grid size-full place-items-center">
@@ -40,7 +43,7 @@ export default function ValentineMessageCreationFormPage() {
 					<div>
 						<p>
 							Error:{" "}
-							<For each={parsedResult.issues}>
+							<For each={parsedResult().issues}>
 								{(issue) => <span class="text-info">{issue.message}</span>}
 							</For>
 						</p>
@@ -51,7 +54,9 @@ export default function ValentineMessageCreationFormPage() {
 						</A>
 					</div>
 				}
-				when={parsedResult.success && parsedResult.output}
+				when={
+					parsedResult().success && (parsedResult().output as RouteParamsOutput)
+				}
 			>
 				{(output) => (
 					<ErrorBoundary
