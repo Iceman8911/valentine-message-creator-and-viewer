@@ -3,8 +3,8 @@ import { HeartIcon } from "lucide-solid";
 
 export default function ValentineHeartIcon(props: { class?: string }) {
 	return (
-		<HeartIcon
-			class={clsx("fill-primary motion-safe:animate-pulse", props.class)}
-		/>
+		<div class="flex gap-2 motion-safe:animate-pulse">
+			<HeartIcon class={clsx("fill-primary", props.class)} />💕
+		</div>
 	);
 }
