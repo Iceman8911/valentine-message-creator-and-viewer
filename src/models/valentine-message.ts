@@ -185,32 +185,25 @@ export type ValentineCombinedMessageOutput = v.InferOutput<
 
 export const ValentineCombinedMessageFromCompressedBase64Schema =
 	v.fallbackAsync(
-		v.objectAsync(
-			{
-				data: v.pipeAsync(
-					v.string("Expected a compressed string"),
-					v.base64(),
-					v.transformAsync(async (compressed) => {
-						const decompressed = await decompressBase64ToString(compressed);
+		v.pipeAsync(
+			v.string("Expected a compressed string"),
+			v.base64(),
+			v.transformAsync(async (compressed) => {
+				const decompressed = await decompressBase64ToString(compressed);
 
-						return v.parse(
-							v.pipe(
-								v.string(),
-								v.transform(JSON.parse),
-								ValentineCombinedMessageSchema,
-							),
-							decompressed,
-						);
-					}),
-				),
-			},
-			"Object must have a `data` property with the compressed data.",
+				return v.parse(
+					v.pipe(
+						v.string(),
+						v.transform(JSON.parse),
+						ValentineCombinedMessageSchema,
+					),
+					decompressed,
+				);
+			}),
 		),
 		{
-			data: {
-				intro: createDefaultValentineMessageIntro(),
-				outro: createDefaultValentineMessageOutro(),
-			},
+			intro: createDefaultValentineMessageIntro(),
+			outro: createDefaultValentineMessageOutro(),
 		},
 	);
 export type ValentineCombinedMessageFromCompressedBase64Input = v.InferInput<

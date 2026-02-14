@@ -30,7 +30,7 @@ export default function ValentineMessageCreateOutroForm(
 							ValentineCombinedMessageFromCompressedBase64Schema,
 							props.params,
 						)
-					).data.outro;
+					).outro;
 
 				return input;
 			} catch {
@@ -48,18 +48,15 @@ export default function ValentineMessageCreateOutroForm(
 	const handleSubmitForm: SubmitHandler<
 		typeof ValentineMessageOutroSchema
 	> = async (outroFormInputs) => {
-		const combinedOldPayload = (
-			await v.parseAsync(
-				ValentineCombinedMessageFromCompressedBase64Schema,
-				props.params,
-			)
-		).data;
+		const combinedOldPayload = await v.parseAsync(
+			ValentineCombinedMessageFromCompressedBase64Schema,
+			props.params,
+		);
 
 		combinedOldPayload.outro = outroFormInputs;
 
-		const payload: ValentineCombinedMessageFromCompressedBase64Input = {
-			data: await compressStringToBase64(JSON.stringify(combinedOldPayload)),
-		};
+		const payload: ValentineCombinedMessageFromCompressedBase64Input =
+			await compressStringToBase64(JSON.stringify(combinedOldPayload));
 
 		props.setParams(payload);
 	};

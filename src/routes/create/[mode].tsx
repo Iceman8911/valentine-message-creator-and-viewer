@@ -7,18 +7,31 @@ import ValentineMessageCreateOutroForm from "~/components/valentine-message-crea
 
 const RouteOptionSchema = v.picklist(["intro", "outro"]);
 
-const ParamsSchema = v.object({
+const RouteParamsSchema = v.object({
 	mode: RouteOptionSchema,
 });
 
+const SearchParamsSchema = v.fallback(v.object({ data: v.string() }), {
+	data: "",
+});
+type SearchParamsInput = v.InferOutput<typeof SearchParamsSchema>;
+
 export default function ValentineMessageCreationFormPage() {
 	const routeParams = useParams();
-	const [rawSearchParams, setSearchParams] = useSearchParams();
-	const usefulSearchParams = createMemo(() => ({
-		data: `${rawSearchParams["data"]}`,
-	}));
 
-	const parsedResult = v.safeParse(ParamsSchema, routeParams);
+	const [rawSearchParams, _setSearchParams] = useSearchParams();
+	const usefulSearchParams = createMemo(() =>
+		v.parse(SearchParamsSchema, rawSearchParams),
+	);
+	const setSearchParams = (input: string) => {
+		const payload: SearchParamsInput = {
+			data: input,
+		};
+
+		_setSearchParams(payload);
+	};
+
+	const parsedResult = v.safeParse(RouteParamsSchema, routeParams);
 
 	return (
 		<div class="grid size-full place-items-center">
@@ -55,14 +68,14 @@ export default function ValentineMessageCreationFormPage() {
 						<Show
 							fallback={
 								<ValentineMessageCreateOutroForm
-									params={usefulSearchParams()}
+									params={usefulSearchParams().data}
 									setParams={setSearchParams}
 								/>
 							}
 							when={output().mode === "intro"}
 						>
 							<ValentineMessageCreateIntroForm
-								params={usefulSearchParams()}
+								params={usefulSearchParams().data}
 								setParams={setSearchParams}
 							/>
 						</Show>

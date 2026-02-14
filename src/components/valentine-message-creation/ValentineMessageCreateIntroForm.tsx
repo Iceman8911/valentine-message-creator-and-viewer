@@ -233,16 +233,20 @@ export default function ValentineMessageCreateIntroForm(
 	/** Prioritize props, but fall back to searchParams */
 	const initialInput = createAsync<ValentineMessageIntroInput>(
 		async () => {
-			const input =
-				props.initialInput ??
-				(
-					await v.parseAsync(
-						ValentineCombinedMessageFromCompressedBase64Schema,
-						props.params,
-					)
-				).data.intro;
+			try {
+				const input =
+					props.initialInput ??
+					(
+						await v.parseAsync(
+							ValentineCombinedMessageFromCompressedBase64Schema,
+							props.params,
+						)
+					).intro;
 
-			return input;
+				return input;
+			} catch {
+				return createDefaultValentineMessageIntro();
+			}
 		},
 		{ initialValue: createDefaultValentineMessageIntro() },
 	);
@@ -257,18 +261,15 @@ export default function ValentineMessageCreateIntroForm(
 	const handleSubmitForm: formisch.SubmitHandler<
 		typeof ValentineMessageIntroSchema
 	> = async (introFromInputs) => {
-		const combinedOldPayload = (
-			await v.parseAsync(
-				ValentineCombinedMessageFromCompressedBase64Schema,
-				props.params,
-			)
-		).data;
+		const combinedOldPayload = await v.parseAsync(
+			ValentineCombinedMessageFromCompressedBase64Schema,
+			props.params,
+		);
 
 		combinedOldPayload.intro = introFromInputs;
 
-		const payload: ValentineCombinedMessageFromCompressedBase64Input = {
-			data: await compressStringToBase64(JSON.stringify(combinedOldPayload)),
-		};
+		const payload: ValentineCombinedMessageFromCompressedBase64Input =
+			await compressStringToBase64(JSON.stringify(combinedOldPayload));
 
 		props.setParams(payload);
 

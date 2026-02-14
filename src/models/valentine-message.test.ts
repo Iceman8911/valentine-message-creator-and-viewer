@@ -217,19 +217,17 @@ describe("ValentineCombinedMessageFromCompressedBase64Schema", () => {
 
 		const parsed = await v.parseAsync(
 			ValentineCombinedMessageFromCompressedBase64Schema,
-			{
-				data: compressed,
-			},
+			compressed,
 		);
 
-		// Returned shape: { data: ValentineCombinedMessageOutput }
-		expect(parsed.data.intro.collection[0]?.text).toBe("Hey you");
-		expect(parsed.data.intro.collection[0]?.img).toBeUndefined();
-		expect(parsed.data.intro.delayMs).toBe(0);
+		// Returned shape: ValentineCombinedMessageOutput
+		expect(parsed.intro.collection[0]?.text).toBe("Hey you");
+		expect(parsed.intro.collection[0]?.img).toBeUndefined();
+		expect(parsed.intro.delayMs).toBe(0);
 
 		// Ensure defaults + transforms are applied even through the compressed pipeline
-		expect(parsed.data.outro.dialog.fanfare).toEqual([]);
-		expect(parsed.data.outro.noBtnAction.click).toEqual(["growYesBtn"]);
+		expect(parsed.outro.dialog.fanfare).toEqual([]);
+		expect(parsed.outro.noBtnAction.click).toEqual(["growYesBtn"]);
 	});
 
 	it("should reject invalid JSON in decompressed payload", async () => {
@@ -237,9 +235,10 @@ describe("ValentineCombinedMessageFromCompressedBase64Schema", () => {
 
 		expect(
 			await v
-				.parseAsync(ValentineCombinedMessageFromCompressedBase64Schema, {
-					data: compressed,
-				})
+				.parseAsync(
+					ValentineCombinedMessageFromCompressedBase64Schema,
+					compressed,
+				)
 				.catch(() => null),
 		).toBeNull();
 	});
@@ -250,18 +249,17 @@ describe("ValentineCombinedMessageFromCompressedBase64Schema", () => {
 		);
 
 		const promise = v
-			.parseAsync(ValentineCombinedMessageFromCompressedBase64Schema, {
-				data: compressed,
-			})
+			.parseAsync(
+				ValentineCombinedMessageFromCompressedBase64Schema,
+				compressed,
+			)
 			.catch(() => null);
 
 		expect(await promise).not.toBeNull();
 
 		const defaults: ValentineCombinedMessageFromCompressedBase64Output = {
-			data: {
-				intro: createDefaultValentineMessageIntro(),
-				outro: createDefaultValentineMessageOutro(),
-			},
+			intro: createDefaultValentineMessageIntro(),
+			outro: createDefaultValentineMessageOutro(),
 		};
 
 		expect(await promise).toEqual(defaults);
