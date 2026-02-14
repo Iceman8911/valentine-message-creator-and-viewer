@@ -1,6 +1,10 @@
 import * as v from "valibot";
 import { dedupeArray } from "~/utils/array";
 import { decompressBase64ToString } from "~/utils/string-compression";
+import {
+	MAX_DELAY_MS_VALUE,
+	MIN_DELAY_MS_VALUE,
+} from "../components/constants/model-limits";
 import { NonEmptyTextSchema, UrlStringSchema } from "./shared";
 
 const OptionalUrlStringSchema = v.optional(
@@ -49,8 +53,8 @@ export const ValentineMessageIntroSchema = v.object({
 			v.union([v.string(), v.number()]),
 			v.toNumber(),
 			v.integer(),
-			v.toMinValue(0),
-			v.toMaxValue(60_000),
+			v.toMinValue(MIN_DELAY_MS_VALUE),
+			v.toMaxValue(MAX_DELAY_MS_VALUE),
 		),
 		0,
 	),

@@ -1,5 +1,5 @@
 import * as formisch from "@formisch/solid";
-import { createAsync } from "@solidjs/router";
+import { createAsync, useNavigate } from "@solidjs/router";
 import { PlusIcon, Trash2Icon } from "lucide-solid";
 import { For } from "solid-js";
 import * as v from "valibot";
@@ -12,9 +12,16 @@ import {
 	ValentineMessageIntroSchema,
 } from "~/models/valentine-message";
 import { compressStringToBase64 } from "~/utils/string-compression";
+import {
+	MAX_DELAY_MS_VALUE,
+	MIN_DELAY_MS_VALUE,
+} from "../constants/model-limits";
 import BaseButton from "../ui/BaseButton";
+import FieldsetNumberInput from "../ui/form-fields/FieldsetNumberInput";
+import FieldsetTextInput from "../ui/form-fields/FieldsetTextInput";
+import FieldsetToggleInput from "../ui/form-fields/FieldsetToggleInput";
+import FloatingLabelTextInput from "../ui/form-fields/FloatingLabelTextInput";
 import InfoButtonPopover from "../ui/InfoButtonPopover";
-import RequiredAsterisk from "../ui/RequiredAsterisk";
 import type { _ValentineMessageCreationFormSharedProps } from "./shared";
 
 function ValentineMessageIntroHeader() {
@@ -35,27 +42,19 @@ function AudioField(props: FieldProps) {
 	return (
 		<formisch.Field of={props.form} path={["audio"]}>
 			{(field) => (
-				<fieldset class="fieldset">
-					<legend class="fieldset-legend">
-						Audio Link{" "}
-						<InfoButtonPopover
-							description="A link to an online audio asset that should play in the background while the user views the message."
-							title="Audio Link"
-						/>{" "}
-					</legend>
-					<input
-						{...field.props}
-						aria-invalid={!!field.errors}
-						class="input validator"
-						id={field.props.name}
-						placeholder="https://www.example.com/bg.mp3"
-						type="text"
-						value={field.input || ""}
-					/>
-					<div class="validator-hint hidden">
-						{field.errors && <div>{field.errors[0]}</div>}
-					</div>
-				</fieldset>
+				<FieldsetTextInput
+					{...field.props}
+					errors={field.errors}
+					infoPopover={{
+						description:
+							"A link to an online audio asset that should play in the background while the user views the message.",
+						title: "Audio Link",
+					}}
+					input={field.input}
+					legend="Audio Link"
+					placeholder="https://www.example.com/1.ogg"
+					type="text"
+				/>
 			)}
 		</formisch.Field>
 	);
@@ -65,25 +64,19 @@ function BgImageField(props: FieldProps) {
 	return (
 		<formisch.Field of={props.form} path={["bgImage"]}>
 			{(field) => (
-				<fieldset class="fieldset">
-					<legend class="fieldset-legend">
-						Background Image Link{" "}
-						<InfoButtonPopover
-							description="A link to an online image asset to replace the default background."
-							title="Background Image Link"
-						/>{" "}
-					</legend>
-					<input
-						{...field.props}
-						aria-invalid={!!field.errors}
-						class="input validator"
-						id={field.props.name}
-						placeholder="https://www.example.com/bg.png"
-						type="text"
-						value={field.input || ""}
-					/>
-					<div class="validator-hint hidden">{field.errors?.[0]}</div>
-				</fieldset>
+				<FieldsetTextInput
+					{...field.props}
+					errors={field.errors}
+					infoPopover={{
+						description:
+							"A link to an online image asset to replace the default background.",
+						title: "Background Image Link",
+					}}
+					input={field.input}
+					legend="Background Image Link"
+					placeholder="https://www.example.com/1.png"
+					type="text"
+				/>
 			)}
 		</formisch.Field>
 	);
@@ -93,60 +86,39 @@ function ShowClickHeartsField(props: FieldProps) {
 	return (
 		<formisch.Field of={props.form} path={["showClickHearts"]}>
 			{(field) => (
-				<fieldset class="fieldset">
-					<legend class="fieldset-legend">
-						Show Heart Animation on Click{" "}
-						<InfoButtonPopover
-							description="Play a cute heart animation wherever the screen is clicked."
-							title="Show Heart Animation on Click"
-						/>{" "}
-					</legend>
-					<input
-						{...field.props}
-						aria-invalid={!!field.errors}
-						checked={field.input}
-						class="toggle"
-						id={field.props.name}
-						type="checkbox"
-					/>
-					<div class="validator-hint hidden">{field.errors?.[0]}</div>
-				</fieldset>
+				<FieldsetToggleInput
+					{...field.props}
+					errors={field.errors}
+					infoPopover={{
+						description:
+							"Play a cute heart animation wherever the screen is clicked.",
+						title: "Show Heart Animation on Click",
+					}}
+					input={field.input}
+					legend="Show Heart Animation on Click"
+				/>
 			)}
 		</formisch.Field>
 	);
 }
 
 function DelayDurationField(props: FieldProps) {
-	const [min, max] = (() => {
-		const [, , , toMinValSchema, toMaxValSchema] =
-			ValentineMessageIntroSchema.entries.delayMs.wrapped.pipe;
-
-		return [toMinValSchema.requirement, toMaxValSchema.requirement];
-	})();
-
 	return (
 		<formisch.Field of={props.form} path={["delayMs"]}>
 			{(field) => (
-				<fieldset class="fieldset">
-					<legend class="fieldset-legend">
-						Delay (in milliseconds){" "}
-						<InfoButtonPopover
-							description="How long, in milliseconds, a passage is played before automatically advancing to the next. A value of '0' disables this behaviour."
-							title="Delay"
-						/>{" "}
-					</legend>
-					<input
-						{...field.props}
-						aria-invalid={!!field.errors}
-						class="input validator"
-						id={field.props.name}
-						max={max}
-						min={min}
-						type="number"
-						value={field.input}
-					/>
-					<div class="validator-hint hidden">{field.errors?.[0]}</div>
-				</fieldset>
+				<FieldsetNumberInput
+					{...field.props}
+					errors={field.errors}
+					infoPopover={{
+						description:
+							"How long, in milliseconds, a passage is played before automatically advancing to the next. A value of '0' disables this behaviour.",
+						title: "Delay",
+					}}
+					input={field.input}
+					legend="Delay (in milliseconds)"
+					max={MAX_DELAY_MS_VALUE}
+					min={MIN_DELAY_MS_VALUE}
+				/>
 			)}
 		</formisch.Field>
 	);
@@ -160,25 +132,15 @@ function PassageCollectionFieldText(props: PassageCollectionFieldProps) {
 	return (
 		<formisch.Field of={props.form} path={["collection", props.idx, "text"]}>
 			{(field) => (
-				<div>
-					<label class="floating-label" for={field.props.name}>
-						<span>
-							Passage <RequiredAsterisk />
-						</span>
-
-						<input
-							{...field.props}
-							aria-invalid={!!field.errors}
-							class="input validator"
-							id={field.props.name}
-							placeholder="I love you :3"
-							required
-							type="text"
-							value={field.input ?? ""}
-						></input>
-					</label>
-					<div class="validator-hint hidden">{field.errors?.[0]}</div>
-				</div>
+				<FloatingLabelTextInput
+					{...field.props}
+					errors={field.errors}
+					input={field.input}
+					label="Passage"
+					placeholder="I love you :3"
+					required={true}
+					type="text"
+				/>
 			)}
 		</formisch.Field>
 	);
@@ -188,22 +150,14 @@ function PassageCollectionFieldImgs(props: PassageCollectionFieldProps) {
 	return (
 		<formisch.Field of={props.form} path={["collection", props.idx, "img"]}>
 			{(field) => (
-				<div>
-					<label class="floating-label" for={field.props.name}>
-						<span>Image / Gif Link</span>
-
-						<input
-							{...field.props}
-							aria-invalid={!!field.errors}
-							class="input validator"
-							id={field.props.name}
-							placeholder="https://www.example.com/1.png"
-							type="text"
-							value={field.input ?? ""}
-						></input>
-					</label>
-					<div class="validator-hint hidden">{field.errors?.[0]}</div>
-				</div>
+				<FloatingLabelTextInput
+					{...field.props}
+					errors={field.errors}
+					input={field.input}
+					label="Image / Gif Link"
+					placeholder="https://www.example.com/1.png"
+					type="text"
+				/>
 			)}
 		</formisch.Field>
 	);
@@ -274,23 +228,21 @@ interface ValentineMessageCreateIntroFormProps
 export default function ValentineMessageCreateIntroForm(
 	props: ValentineMessageCreateIntroFormProps,
 ) {
+	const navigate = useNavigate();
+
 	/** Prioritize props, but fall back to searchParams */
 	const initialInput = createAsync<ValentineMessageIntroInput>(
 		async () => {
-			try {
-				const input =
-					props.initialInput ??
-					(
-						await v.parseAsync(
-							ValentineCombinedMessageFromCompressedBase64Schema,
-							props.params,
-						)
-					).data.intro;
+			const input =
+				props.initialInput ??
+				(
+					await v.parseAsync(
+						ValentineCombinedMessageFromCompressedBase64Schema,
+						props.params,
+					)
+				).data.intro;
 
-				return input;
-			} catch {
-				return createDefaultValentineMessageIntro();
-			}
+			return input;
 		},
 		{ initialValue: createDefaultValentineMessageIntro() },
 	);
@@ -319,6 +271,9 @@ export default function ValentineMessageCreateIntroForm(
 		};
 
 		props.setParams(payload);
+
+		// Load the outro form
+		navigate(`/create/outro?${new URLSearchParams(payload)}`);
 	};
 
 	return (

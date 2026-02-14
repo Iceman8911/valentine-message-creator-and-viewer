@@ -1,10 +1,7 @@
 import { InfoIcon } from "lucide-solid";
-import BasePopover from "./BasePopover";
+import BasePopover, { type BasePopoverProps } from "./BasePopover";
 
-type InfoButtonPopoverProps = Omit<
-	Parameters<typeof BasePopover>[0],
-	"trigger"
->;
+export type InfoButtonPopoverProps = Omit<BasePopoverProps, "trigger">;
 
 export default function InfoButtonPopover(props: InfoButtonPopoverProps) {
 	return (

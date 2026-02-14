@@ -8,7 +8,7 @@ import type {
 import { XIcon } from "lucide-solid";
 import type { JSXElement } from "solid-js";
 
-interface BasePopoverProps {
+export interface BasePopoverProps {
 	class?: Partial<
 		Record<"trigger" | "content" | "title" | "closeBtn" | "description", string>
 	>;
