@@ -7,6 +7,9 @@ export const UrlStringSchema = v.pipe(
 );
 export type UrlStringInput = v.InferInput<typeof UrlStringSchema>;
 export type UrlStringOutput = v.InferOutput<typeof UrlStringSchema>;
+export function createDefaultUrlString() {
+	return v.parse(UrlStringSchema, "https://foo.bar");
+}
 
 export const NonEmptyTextSchema = v.pipe(
 	v.string(),
