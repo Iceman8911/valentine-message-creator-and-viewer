@@ -4,6 +4,7 @@ import InfoButtonPopover, {
 	type InfoButtonPopoverProps,
 } from "../InfoButtonPopover";
 import RequiredAsterisk from "../RequiredAsterisk";
+import * as Shared from "./shared";
 
 interface FieldsetToggleInputProps extends FieldElementProps {
 	infoPopover: InfoButtonPopoverProps;
@@ -37,7 +38,8 @@ export default function FieldsetToggleInput(props: FieldsetToggleInputProps) {
 				required={props.required}
 				type="checkbox"
 			/>
-			<div class="validator-hint hidden">{props.errors?.[0]}</div>
+
+			<Shared._FormFieldValidatorText errors={props.errors} name={props.name} />
 		</fieldset>
 	);
 }

@@ -4,6 +4,7 @@ import InfoButtonPopover, {
 	type InfoButtonPopoverProps,
 } from "../InfoButtonPopover";
 import RequiredAsterisk from "../RequiredAsterisk";
+import * as Shared from "./shared";
 
 export interface RadioGroupOption<TValue extends string> {
 	label: JSXElement;
@@ -109,9 +110,7 @@ export default function FieldsetRadioGroupInput<TValue extends string>(
 				</For>
 			</div>
 
-			<div class="validator-hint hidden" id={`${props.name}-error`}>
-				{props.errors?.[0]}
-			</div>
+			<Shared._FormFieldValidatorText errors={props.errors} name={props.name} />
 		</fieldset>
 	);
 }

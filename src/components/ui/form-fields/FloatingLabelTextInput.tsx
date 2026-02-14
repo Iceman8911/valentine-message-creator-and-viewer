@@ -4,6 +4,7 @@ import InfoButtonPopover, {
 	type InfoButtonPopoverProps,
 } from "../InfoButtonPopover";
 import RequiredAsterisk from "../RequiredAsterisk";
+import * as Shared from "./shared";
 
 interface FloatingLabelTextInputProps extends FieldElementProps {
 	infoPopover?: InfoButtonPopoverProps;
@@ -42,7 +43,8 @@ export default function FloatingLabelTextInput(
 				type="text"
 				value={props.input || ""}
 			/>
-			<div class="validator-hint hidden">{props.errors?.[0]}</div>
+
+			<Shared._FormFieldValidatorText errors={props.errors} name={props.name} />
 		</label>
 	);
 }
