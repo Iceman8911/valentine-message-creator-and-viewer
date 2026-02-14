@@ -4,7 +4,10 @@ import * as v from "valibot";
 import BaseButton from "~/components/ui/BaseButton";
 import ValentineMessageCreateIntroForm from "~/components/valentine-message-creation/ValentineMessageCreateIntroForm";
 import ValentineMessageCreateOutroForm from "~/components/valentine-message-creation/ValentineMessageCreateOutroForm";
-import { ValentineMessageSearchParamsSchema } from "/src/models/valentine-message";
+import {
+	type ValentineMessageSearchParamsInput,
+	ValentineMessageSearchParamsSchema,
+} from "/src/models/valentine-message";
 
 const RouteOptionSchema = v.picklist(["intro", "outro"]);
 

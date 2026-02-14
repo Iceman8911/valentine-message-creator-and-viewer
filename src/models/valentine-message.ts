@@ -1,5 +1,4 @@
 import * as v from "valibot";
-import { dedupeArray } from "~/utils/array";
 import {
 	compressStringToBase64,
 	decompressBase64ToString,
@@ -76,24 +75,19 @@ export function createDefaultValentineMessageIntro(): ValentineMessageIntroOutpu
 	return v.parse(ValentineMessageIntroSchema, input);
 }
 
+const OptionalBooleanSchema = v.optional(v.boolean(), false);
+
 export const ValentineMessageOutroSchema = v.object({
 	...SharedIntroAndOutroSchema.entries,
 
 	/** Characteristics of the final dialog that will appear after the user clicks the yes button. */
 	dialog: v.object({
-		fanfare: (() => {
-			const picklist = v.picklist(["hearts", "confetti"]);
-			const maxLength = picklist.options.length;
-
-			return v.optional(
-				v.pipe(
-					v.array(picklist),
-					v.transform(dedupeArray),
-					v.maxLength(maxLength, "Too many fanfare options"),
-				),
-				[],
-			);
-		})(),
+		fanfare: v.optional(
+			v.object({
+				confetti: OptionalBooleanSchema,
+				hearts: OptionalBooleanSchema,
+			}),
+		),
 
 		img: OptionalUrlStringSchema,
 		text: NonEmptyTextSchema,
@@ -108,20 +102,14 @@ export const ValentineMessageOutroSchema = v.object({
 		 * - `growYesBtn` -> make the yes button grow larger.
 		 * - `moveAround` -> move to a random position onscreen with a transition.
 		 * - `fadeOut` -> (???) fade the button's colours out till it's nearly transparent (but keep the text readable)
-		 *
-		 * If multiple of the same actions exist, only the first will have any effect.
 		 */
-		click: (() => {
-			const picklist = v.picklist(["growYesBtn", "moveAround", "fadeOut"]);
-			const { length } = picklist.options;
-
-			return v.pipe(
-				v.array(picklist),
-				v.transform(dedupeArray),
-				v.minLength(1, "At least an action is required."),
-				v.maxLength(length, `Can't have more than ${length} click actions.`),
-			);
-		})(),
+		click: v.optional(
+			v.object({
+				fadeOut: OptionalBooleanSchema,
+				growYesBtn: OptionalBooleanSchema,
+				moveAround: OptionalBooleanSchema,
+			}),
+		),
 		/** When the "no button" is clicked:
 		 *
 		 * - `random` -> randomly display text. Does not ever stop.
@@ -147,10 +135,15 @@ export type ValentineMessageOutroOutput = v.InferOutput<
 export function createDefaultValentineMessageOutro(): ValentineMessageOutroOutput {
 	const input: ValentineMessageOutroInput = {
 		dialog: {
+			fanfare: {
+				hearts: true,
+			},
 			text: "Till the ends of the earth.",
 		},
 		noBtnAction: {
-			click: ["growYesBtn"],
+			click: {
+				growYesBtn: true,
+			},
 			text: "scrollThenRandom",
 		},
 		noBtnText: [
