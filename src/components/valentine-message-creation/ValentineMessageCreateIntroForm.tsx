@@ -4,14 +4,16 @@ import { PlusIcon, Trash2Icon } from "lucide-solid";
 import { For } from "solid-js";
 import * as v from "valibot";
 import {
+	createDefaultCombinedValentineMessage,
 	createDefaultValentineMessageIntro,
-	type ValentineCombinedMessageFromCompressedBase64Input,
 	ValentineCombinedMessageFromCompressedBase64Schema,
+	type ValentineCombinedMessageToCompressedBase64Input,
+	type ValentineCombinedMessageToCompressedBase64Output,
+	ValentineCombinedMessageToCompressedBase64Schema,
 	type ValentineMessageIntroInput,
 	type ValentineMessageIntroOutput,
 	ValentineMessageIntroSchema,
 } from "~/models/valentine-message";
-import { compressStringToBase64 } from "~/utils/string-compression";
 import {
 	MAX_DELAY_MS_VALUE,
 	MIN_DELAY_MS_VALUE,
@@ -233,20 +235,17 @@ export default function ValentineMessageCreateIntroForm(
 	/** Prioritize props, but fall back to searchParams */
 	const initialInput = createAsync<ValentineMessageIntroInput>(
 		async () => {
-			try {
-				const input =
-					props.initialInput ??
-					(
-						await v.parseAsync(
-							ValentineCombinedMessageFromCompressedBase64Schema,
-							props.params,
-						)
-					).intro;
+			const input =
+				props.initialInput ??
+				(await v
+					.parseAsync(
+						ValentineCombinedMessageFromCompressedBase64Schema,
+						props.params,
+					)
+					.then((parsed) => parsed.intro)
+					.catch(() => createDefaultValentineMessageIntro()));
 
-				return input;
-			} catch {
-				return createDefaultValentineMessageIntro();
-			}
+			return input;
 		},
 		{ initialValue: createDefaultValentineMessageIntro() },
 	);
@@ -260,16 +259,22 @@ export default function ValentineMessageCreateIntroForm(
 
 	const handleSubmitForm: formisch.SubmitHandler<
 		typeof ValentineMessageIntroSchema
-	> = async (introFromInputs) => {
-		const combinedOldPayload = await v.parseAsync(
-			ValentineCombinedMessageFromCompressedBase64Schema,
-			props.params,
-		);
+	> = async (introFormInputs) => {
+		const combinedOldPayload: ValentineCombinedMessageToCompressedBase64Input =
+			await v
+				.parseAsync(
+					ValentineCombinedMessageFromCompressedBase64Schema,
+					props.params,
+				)
+				.catch(() => createDefaultCombinedValentineMessage());
 
-		combinedOldPayload.intro = introFromInputs;
+		combinedOldPayload.intro = introFormInputs;
 
-		const payload: ValentineCombinedMessageFromCompressedBase64Input =
-			await compressStringToBase64(JSON.stringify(combinedOldPayload));
+		const payload: ValentineCombinedMessageToCompressedBase64Output =
+			await v.parseAsync(
+				ValentineCombinedMessageToCompressedBase64Schema,
+				combinedOldPayload,
+			);
 
 		props.setParams(payload);
 

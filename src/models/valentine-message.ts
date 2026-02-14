@@ -1,6 +1,9 @@
 import * as v from "valibot";
 import { dedupeArray } from "~/utils/array";
-import { decompressBase64ToString } from "~/utils/string-compression";
+import {
+	compressStringToBase64,
+	decompressBase64ToString,
+} from "~/utils/string-compression";
 import {
 	MAX_DELAY_MS_VALUE,
 	MIN_DELAY_MS_VALUE,
@@ -183,6 +186,12 @@ export type ValentineCombinedMessageOutput = v.InferOutput<
 	typeof ValentineCombinedMessageSchema
 >;
 
+export function createDefaultCombinedValentineMessage() {
+	const input: ValentineCombinedMessageInput = {};
+
+	return v.parse(ValentineCombinedMessageSchema, input);
+}
+
 export const ValentineCombinedMessageFromCompressedBase64Schema =
 	v.fallbackAsync(
 		v.pipeAsync(
@@ -201,14 +210,28 @@ export const ValentineCombinedMessageFromCompressedBase64Schema =
 				);
 			}),
 		),
-		{
-			intro: createDefaultValentineMessageIntro(),
-			outro: createDefaultValentineMessageOutro(),
-		},
+		createDefaultCombinedValentineMessage(),
 	);
 export type ValentineCombinedMessageFromCompressedBase64Input = v.InferInput<
 	typeof ValentineCombinedMessageFromCompressedBase64Schema
 >;
 export type ValentineCombinedMessageFromCompressedBase64Output = v.InferOutput<
 	typeof ValentineCombinedMessageFromCompressedBase64Schema
+>;
+
+export const ValentineCombinedMessageToCompressedBase64Schema = v.pipeAsync(
+	ValentineCombinedMessageSchema,
+	v.stringifyJson(),
+	v.transformAsync(async (stringified) => {
+		const compressed = await compressStringToBase64(stringified);
+
+		return compressed;
+	}),
+	v.base64(),
+);
+export type ValentineCombinedMessageToCompressedBase64Input = v.InferInput<
+	typeof ValentineCombinedMessageToCompressedBase64Schema
+>;
+export type ValentineCombinedMessageToCompressedBase64Output = v.InferOutput<
+	typeof ValentineCombinedMessageToCompressedBase64Schema
 >;
