@@ -5,12 +5,9 @@ import lucidePreprocess from "vite-plugin-lucide-preprocess";
 export default defineConfig({
 	server: {
 		baseURL: process.env["BASE_PATH"],
-		prerender: {
-			crawlLinks: true,
-			routes: ["/", "/create/intro", "/create/outro", "/view"],
-		},
 		preset: "github-pages",
 	},
+	ssr: false,
 	vite: {
 		plugins: [lucidePreprocess(), tailwindcss()],
 	},
