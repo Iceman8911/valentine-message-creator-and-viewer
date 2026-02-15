@@ -19,6 +19,6 @@ export async function getValentineMessageViewLink(
 
 	return v.parse(
 		UrlStringSchema,
-		`${baseUrl}/view?${decodeURIComponent(`${new URLSearchParams(payload)}`)}`,
+		`${baseUrl}${import.meta.env.SERVER_BASE_URL ?? import.meta.env.BASE_URL ?? ""}/view?${decodeURIComponent(`${new URLSearchParams(payload)}`)}`,
 	);
 }
